@@ -1,0 +1,46 @@
+package cn.finull.mm.server.entity;
+
+import cn.finull.mm.server.common.enums.GroupJoinInviteStatusEnum;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.util.Date;
+
+/**
+ * Description
+ * <p>
+ * Copyright (C) HPE, All rights reserved.
+ *
+ * @author Ma, Chenxi
+ * @date 2020-02-13 23:23
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "group_join_invite")
+public class GroupJoinInvite {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "group_join_invite_id")
+    private Long groupJoinInviteId;
+
+    @Column(name = "group_id", nullable = false)
+    private Long groupId;
+
+    @Column(name = "invite_user_id", nullable = false)
+    private Long inviteUserId;
+
+    @Convert(converter = GroupJoinInviteStatusEnum.GroupJoinInviteStatusEnumConverter.class)
+    @Column(name = "group_join_invite_status", nullable = false)
+    private GroupJoinInviteStatusEnum groupJoinInviteStatus;
+
+    @Column(name = "create_time", nullable = false)
+    private Date createTime;
+
+    @Column(name = "update_time", nullable = false)
+    private Date updateTime;
+}
