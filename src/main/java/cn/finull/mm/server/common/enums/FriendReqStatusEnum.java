@@ -20,8 +20,7 @@ public enum FriendReqStatusEnum implements BaseEnum<FriendReqStatusEnum> {
      */
     REQ("1", "请求中"),
     AGREE("2", "已同意"),
-    REJECT("3", "已拒绝"),
-    IGNORE("4", "已忽略");
+    IGNORE("3", "已忽略");
 
     private String code;
     private String desc;

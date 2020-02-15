@@ -1,5 +1,6 @@
 package cn.finull.mm.server.entity;
 
+import cn.finull.mm.server.common.enums.GroupStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -36,6 +37,10 @@ public class Group {
     @Column(name = "group_desc", nullable = false)
     private String groupDesc;
 
+    @Convert(converter = GroupStatusEnum.GroupStatusEnumConverter.class)
+    @Column(name = "group_status", nullable = false)
+    private GroupStatusEnum groupStatus;
+
     @Column(name = "create_time", nullable = false)
     private Date createTime;
 
@@ -46,6 +51,7 @@ public class Group {
         this.groupName = groupName;
         this.groupDesc = groupDesc;
         this.groupNum = groupNum;
+        groupStatus = GroupStatusEnum.NORMAL;
         createTime = new Date();
         updateTime = new Date();
     }

@@ -2,6 +2,7 @@ package cn.finull.mm.server.controller;
 
 import cn.finull.mm.server.common.constant.RequestConstant;
 import cn.finull.mm.server.param.GroupAddParam;
+import cn.finull.mm.server.param.GroupUpdateParam;
 import cn.finull.mm.server.service.GroupService;
 import cn.finull.mm.server.vo.GroupVO;
 import cn.finull.mm.server.vo.resp.RespVO;
@@ -34,5 +35,28 @@ public class GroupController {
     public RespVO<GroupVO> addGroup(@Validated @RequestBody GroupAddParam groupAddParam,
                                     @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return groupService.addGroup(groupAddParam, userId);
+    }
+
+    /**
+     * 修改群
+     * @param groupUpdateParam
+     * @return
+     */
+    @PutMapping("/groups")
+    public RespVO<GroupVO> updateGroup(@Validated @RequestBody GroupUpdateParam groupUpdateParam,
+                                       @RequestAttribute(RequestConstant.USER_ID) Long userId) {
+        return groupService.updateGroup(groupUpdateParam, userId);
+    }
+
+    /**
+     * 删除群
+     * @param groupId
+     * @param userId
+     * @return
+     */
+    @DeleteMapping("/groups/{groupId}")
+    public RespVO deleteGroup(@PathVariable("groupId") Long groupId,
+                              @RequestAttribute(RequestConstant.USER_ID) Long userId) {
+        return groupService.deleteGroup(groupId, userId);
     }
 }

@@ -20,6 +20,7 @@ public enum GroupJoinInviteStatusEnum implements BaseEnum<GroupJoinInviteStatusE
      *
      */
     INVITE("1", "邀请中"),
+    AGREE("2", "已同意"),
     IGNORE("2", "已忽略");
 
     private String code;

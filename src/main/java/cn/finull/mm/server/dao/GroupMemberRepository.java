@@ -1,7 +1,10 @@
 package cn.finull.mm.server.dao;
 
+import cn.finull.mm.server.common.enums.GroupMemberTypeEnum;
 import cn.finull.mm.server.entity.GroupMember;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
 
 /**
  * Description
@@ -14,4 +17,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> {
 
     long countByGroupId(Long groupId);
+
+    boolean existsByGroupIdAndUserIdAndGroupMemberTypeNot(Long groupId, Long userId, GroupMemberTypeEnum groupMemberType);
+
+    boolean existsByGroupIdAndUserIdAndGroupMemberType(Long groupId, Long userId, GroupMemberTypeEnum groupMemberType);
+
+    void deleteByGroupId(Long groupId);
+
+    List<GroupMember> findAllByGroupIdOrderByGroupMemberType(Long groupId);
 }
