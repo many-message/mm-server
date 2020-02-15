@@ -33,9 +33,6 @@ public class Group {
     @Column(name = "group_num", nullable = false, unique = true)
     private String groupNum;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
-
     @Column(name = "group_desc", nullable = false)
     private String groupDesc;
 
@@ -44,4 +41,12 @@ public class Group {
 
     @Column(name = "update_time", nullable = false)
     private Date updateTime;
+
+    public Group(String groupName, String groupDesc, String groupNum) {
+        this.groupName = groupName;
+        this.groupDesc = groupDesc;
+        this.groupNum = groupNum;
+        createTime = new Date();
+        updateTime = new Date();
+    }
 }

@@ -12,4 +12,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @date 2020-02-13 23:21
  */
 public interface GroupRepository extends JpaRepository<Group, Long> {
+
+    boolean existsByGroupNum(String groupNum);
 }

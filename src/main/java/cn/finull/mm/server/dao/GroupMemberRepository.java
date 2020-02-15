@@ -1,6 +1,6 @@
 package cn.finull.mm.server.dao;
 
-import cn.finull.mm.server.entity.GroupUser;
+import cn.finull.mm.server.entity.GroupMember;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -11,5 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author Ma, Chenxi
  * @date 2020-02-13 23:37
  */
-public interface GroupUserRepository extends JpaRepository<GroupUser, Long> {
+public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> {
+
+    long countByGroupId(Long groupId);
 }
