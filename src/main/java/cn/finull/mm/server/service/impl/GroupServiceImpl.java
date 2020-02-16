@@ -3,6 +3,7 @@ package cn.finull.mm.server.service.impl;
 import cn.finull.mm.server.common.constant.Constant;
 import cn.finull.mm.server.common.constant.RespCodeConstant;
 import cn.finull.mm.server.common.enums.GroupMemberTypeEnum;
+import cn.finull.mm.server.common.enums.GroupStatusEnum;
 import cn.finull.mm.server.dao.GroupMemberRepository;
 import cn.finull.mm.server.dao.GroupRepository;
 import cn.finull.mm.server.entity.Group;
@@ -12,15 +13,24 @@ import cn.finull.mm.server.param.GroupUpdateParam;
 import cn.finull.mm.server.service.GroupService;
 import cn.finull.mm.server.util.RespUtil;
 import cn.finull.mm.server.vo.GroupVO;
+import cn.finull.mm.server.vo.resp.PageVO;
 import cn.finull.mm.server.vo.resp.RespVO;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Description
@@ -56,14 +66,6 @@ public class GroupServiceImpl implements GroupService {
         return groupNum;
     }
 
-    private GroupVO buildGroupVO(Group group) {
-        GroupVO groupVO = new GroupVO();
-        BeanUtil.copyProperties(group, groupVO);
-        Long groupMemberNum = groupMemberRepository.countByGroupId(group.getGroupId());
-        groupVO.setGroupMemberNum(groupMemberNum);
-        return groupVO;
-    }
-
     @Override
     public RespVO<GroupVO> updateGroup(GroupUpdateParam groupUpdateParam, Long userId) {
         if (!groupMemberRepository.existsByGroupIdAndUserIdAndGroupMemberTypeNot(groupUpdateParam.getGroupId(), userId, GroupMemberTypeEnum.ORDINARY)) {
@@ -78,6 +80,40 @@ public class GroupServiceImpl implements GroupService {
         return RespUtil.OK(buildGroupVO(group));
     }
 
+    @Override
+    public RespVO<List<GroupVO>> getGroups(Long userId) {
+        List<Long> groupIds = groupMemberRepository.findAllByUserId(userId)
+                .stream()
+                .map(GroupMember::getGroupId)
+                .collect(Collectors.toList());
+        if (CollUtil.isEmpty(groupIds)) {
+            return RespUtil.OK(List.of());
+        }
+
+        List<GroupVO> groups = groupRepository.findAllByGroupIdInAndOrderByCreateTimeDesc(groupIds)
+                .stream()
+                .map(this::buildGroupVO)
+                .collect(Collectors.toList());
+        return RespUtil.OK(groups);
+    }
+
+    @Override
+    public RespVO<List<GroupVO>> searchGroups(String keyword) {
+        List<GroupVO> groups = groupRepository.findAllByGroupNumOrGroupNameLike(keyword, "%" + keyword + "%")
+                .stream()
+                .map(this::buildGroupVO)
+                .collect(Collectors.toList());
+        return RespUtil.OK(groups);
+    }
+
+    private GroupVO buildGroupVO(Group group) {
+        GroupVO groupVO = new GroupVO();
+        BeanUtil.copyProperties(group, groupVO);
+        Long groupMemberNum = groupMemberRepository.countByGroupId(group.getGroupId());
+        groupVO.setGroupMemberNum(groupMemberNum);
+        return groupVO;
+    }
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public RespVO deleteGroup(Long groupId, Long userId) {
@@ -89,5 +125,37 @@ public class GroupServiceImpl implements GroupService {
         groupMemberRepository.deleteByGroupId(groupId);
 
         return RespUtil.OK();
+    }
+
+    @Override
+    public RespVO<PageVO<GroupVO>> getGroups(String keyword, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Group> groupPage;
+        if (StrUtil.isBlank(keyword)) {
+            groupPage = groupRepository.findAll(pageable);
+        } else {
+            groupPage = groupRepository.findAllByGroupNumOrGroupNameLike(keyword, "%" + keyword + "%", pageable);
+        }
+
+        PageVO<GroupVO> groupAdminPage = new PageVO<>(groupPage.getTotalElements(),
+                groupPage.stream().map(this::buildGroupVO).collect(Collectors.toList()));
+
+        return RespUtil.OK(groupAdminPage);
+    }
+
+    @Override
+    public RespVO<GroupVO> updateGroupStatus(Long groupId, GroupStatusEnum groupStatus) {
+        Optional<Group> groupOptional = groupRepository.findById(groupId);
+        if (groupOptional.isEmpty()) {
+            return RespUtil.error(RespCodeConstant.NOT_FOUND, "群不存在！");
+        }
+
+        Group group = groupOptional.get();
+        group.setGroupStatus(groupStatus);
+        group.setUpdateTime(new Date());
+        groupRepository.save(group);
+
+        return RespUtil.OK(buildGroupVO(group));
     }
 }

@@ -1,9 +1,13 @@
 package cn.finull.mm.server.service;
 
+import cn.finull.mm.server.common.enums.GroupStatusEnum;
 import cn.finull.mm.server.param.GroupAddParam;
 import cn.finull.mm.server.param.GroupUpdateParam;
 import cn.finull.mm.server.vo.GroupVO;
+import cn.finull.mm.server.vo.resp.PageVO;
 import cn.finull.mm.server.vo.resp.RespVO;
+
+import java.util.List;
 
 /**
  * Description
@@ -32,10 +36,43 @@ public interface GroupService {
     RespVO<GroupVO> updateGroup(GroupUpdateParam groupUpdateParam, Long userId);
 
     /**
+     * 获取自己的所有群
+     * @param userId
+     * @return
+     */
+    RespVO<List<GroupVO>> getGroups(Long userId);
+
+    /**
+     * 搜索群
+     * @param keyword
+     * @return
+     */
+    RespVO<List<GroupVO>> searchGroups(String keyword);
+
+    /**
      * 删除群
      * @param groupId
      * @param userId
      * @return
      */
     RespVO deleteGroup(Long groupId, Long userId);
+
+    // admin
+
+    /**
+     * 获取所有群
+     * @param keyword
+     * @param page
+     * @param size
+     * @return
+     */
+    RespVO<PageVO<GroupVO>> getGroups(String keyword, Integer page, Integer size);
+
+    /**
+     * 修改群状态
+     * @param groupId
+     * @param groupStatus
+     * @return
+     */
+    RespVO<GroupVO> updateGroupStatus(Long groupId, GroupStatusEnum groupStatus);
 }

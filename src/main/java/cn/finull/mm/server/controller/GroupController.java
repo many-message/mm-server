@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * Description
  * <p>
@@ -46,6 +48,26 @@ public class GroupController {
     public RespVO<GroupVO> updateGroup(@Validated @RequestBody GroupUpdateParam groupUpdateParam,
                                        @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return groupService.updateGroup(groupUpdateParam, userId);
+    }
+
+    /**
+     * 获取自己的所有群
+     * @param userId
+     * @return
+     */
+    @GetMapping("/groups")
+    public RespVO<List<GroupVO>> getGroups(@RequestAttribute(RequestConstant.USER_ID) Long userId) {
+        return groupService.getGroups(userId);
+    }
+
+    /**
+     * 根据群号搜索群
+     * @param keyword
+     * @return
+     */
+    @GetMapping("/groups/{keyword}")
+    public RespVO<List<GroupVO>> searchGroups(@PathVariable("keyword") String keyword) {
+        return groupService.searchGroups(keyword);
     }
 
     /**

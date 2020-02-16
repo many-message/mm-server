@@ -11,6 +11,7 @@ import cn.finull.mm.server.service.FriendService;
 import cn.finull.mm.server.util.RespUtil;
 import cn.finull.mm.server.vo.FriendVO;
 import cn.finull.mm.server.vo.UserVO;
+import cn.finull.mm.server.vo.privates.FriendDelPrivateVO;
 import cn.finull.mm.server.vo.resp.RespVO;
 import cn.hutool.core.bean.BeanUtil;
 import lombok.RequiredArgsConstructor;
@@ -99,7 +100,7 @@ public class FriendServiceImpl implements FriendService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public RespVO deleteFriend(Long friendId, Long userId) {
+    public RespVO<FriendDelPrivateVO> deleteFriend(Long friendId, Long userId) {
         Optional<Friend> friendOptional = friendRepository.findByFriendIdAndUserId(friendId, userId);
         if (friendOptional.isEmpty()) {
             return RespUtil.error(RespCodeConstant.ACCESS_FORBID, "权限不足！");
@@ -109,6 +110,6 @@ public class FriendServiceImpl implements FriendService {
         friendRepository.deleteByUserIdAndFriendUserId(friend.getFriendUserId(), friend.getUserId());
         friendRepository.delete(friend);
 
-        return RespUtil.OK();
+        return RespUtil.OK(new FriendDelPrivateVO(userId, friend.getFriendUserId()));
     }
 }

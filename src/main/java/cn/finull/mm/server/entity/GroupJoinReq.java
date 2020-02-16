@@ -34,6 +34,9 @@ public class GroupJoinReq {
     @Column(name = "group_id", nullable = false)
     private Long groupId;
 
+    @Column(name = "req_msg", nullable = false)
+    private String reqMsg;
+
     @Convert(converter = GroupJoinReqStatusEnum.GroupJoinReqStatusEnumConverter.class)
     @Column(name = "group_join_req_status", nullable = false)
     private GroupJoinReqStatusEnum groupJoinReqStatus;
@@ -43,4 +46,13 @@ public class GroupJoinReq {
 
     @Column(name = "update_time", nullable = false)
     private Date updateTime;
+
+    public GroupJoinReq(Long reqUserId, Long groupId) {
+        this.reqUserId = reqUserId;
+        this.groupId = groupId;
+        reqMsg = "";
+        groupJoinReqStatus = GroupJoinReqStatusEnum.REQ;
+        createTime = new Date();
+        updateTime = new Date();
+    }
 }

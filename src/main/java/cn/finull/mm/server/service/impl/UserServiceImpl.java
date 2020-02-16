@@ -1,5 +1,6 @@
 package cn.finull.mm.server.service.impl;
 
+import cn.finull.mm.server.common.config.MmConfig;
 import cn.finull.mm.server.common.constant.Constant;
 import cn.finull.mm.server.common.constant.RespCodeConstant;
 import cn.finull.mm.server.common.enums.UserStatusEnum;
@@ -15,16 +16,23 @@ import cn.finull.mm.server.util.CacheUtil;
 import cn.finull.mm.server.util.RespUtil;
 import cn.finull.mm.server.vo.UserLoginVO;
 import cn.finull.mm.server.vo.UserVO;
+import cn.finull.mm.server.vo.admin.UserAdminVO;
+import cn.finull.mm.server.vo.resp.PageVO;
 import cn.finull.mm.server.vo.resp.RespVO;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Description
@@ -47,6 +55,7 @@ public class UserServiceImpl implements UserService {
      */
     private static final int PWD_FOREVER_LOCK_COUNT = 8;
 
+    private final MmConfig mmConfig;
     private final UserRepository userRepository;
     private final SecureService secureService;
 
@@ -166,6 +175,74 @@ public class UserServiceImpl implements UserService {
         user.setPwd(secureService.hashByBCrypt(newPwd));
         user.setUpdateTime(new Date());
 
+        userRepository.save(user);
+
+        return RespUtil.OK();
+    }
+
+    @Override
+    public RespVO<List<UserVO>> searchUser(String keyword) {
+        List<UserVO> users = userRepository.findAllByEmailOrNicknameLike(keyword, "%" + keyword + "%")
+                .stream()
+                .map(this::buildUserVO)
+                .collect(Collectors.toList());
+        return null;
+    }
+
+    private UserVO buildUserVO(User user) {
+        UserVO userVO = new UserVO();
+        BeanUtil.copyProperties(user, userVO);
+        return userVO;
+    }
+
+    @Override
+    public RespVO<PageVO<UserAdminVO>> getUsers(String keyword, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<User> userPage;
+        if (StrUtil.isBlank(keyword)) {
+            userPage = userRepository.findAll(pageable);
+        } else {
+            userPage = userRepository.findAllByEmailOrNicknameLike(keyword, "%" + keyword + "%", pageable);
+        }
+
+        PageVO<UserAdminVO> userAdminPage = new PageVO<>(userPage.getTotalElements(),
+                userPage.get().map(this::buildUserAdminVO).collect(Collectors.toList()));
+
+        return RespUtil.OK(userAdminPage);
+    }
+
+    @Override
+    public RespVO<UserAdminVO> updateUserStatus(Long userId, UserStatusEnum userStatus) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            return RespUtil.error(RespCodeConstant.NOT_FOUND, "用户不存在！");
+        }
+
+        User user = userOptional.get();
+        user.setUserStatus(userStatus);
+        user.setUpdateTime(new Date());
+        userRepository.save(user);
+
+        return RespUtil.OK(buildUserAdminVO(user));
+    }
+
+    private UserAdminVO buildUserAdminVO(User user) {
+        UserAdminVO userAdminVO = new UserAdminVO();
+        BeanUtil.copyProperties(user, userAdminVO);
+        return userAdminVO;
+    }
+
+    @Override
+    public RespVO resetUserPwd(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            return RespUtil.error(RespCodeConstant.NOT_FOUND, "用户不存在！");
+        }
+
+        User user = userOptional.get();
+        user.setPwd(secureService.hashByBCrypt(mmConfig.getUserDefaultPwd()));
+        user.setUpdateTime(new Date());
         userRepository.save(user);
 
         return RespUtil.OK();

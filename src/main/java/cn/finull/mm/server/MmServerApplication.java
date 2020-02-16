@@ -3,6 +3,7 @@ package cn.finull.mm.server;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Description
@@ -12,6 +13,7 @@ import org.springframework.cache.annotation.EnableCaching;
  * @author Ma, Chenxi
  * @date 2020-02-13 21:26
  */
+@EnableScheduling
 @EnableCaching
 @SpringBootApplication
 public class MmServerApplication {

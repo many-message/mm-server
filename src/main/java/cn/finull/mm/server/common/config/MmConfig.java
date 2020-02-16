@@ -45,4 +45,9 @@ public class MmConfig {
      * rsa私钥
      */
     private String rsaPrivateKey;
+
+    /**
+     * 用户默认密码
+     */
+    private String userDefaultPwd;
 }

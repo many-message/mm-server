@@ -47,10 +47,10 @@ public class FriendReq {
     @Column(name = "update_time", nullable = false)
     private Date updateTime;
 
-    public FriendReq(Long reqUserId, Long recUserId, String reqMsg) {
+    public FriendReq(Long reqUserId, Long recUserId) {
         this.reqUserId = reqUserId;
         this.recUserId = recUserId;
-        this.reqMsg = reqMsg;
+        this.reqMsg = "";
         friendReqStatus = FriendReqStatusEnum.REQ;
         createTime = new Date();
         updateTime = new Date();

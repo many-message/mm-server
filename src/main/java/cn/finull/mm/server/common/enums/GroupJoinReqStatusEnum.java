@@ -18,7 +18,7 @@ public enum GroupJoinReqStatusEnum implements BaseEnum<GroupJoinReqStatusEnum> {
     /**
      *
      */
-    INVITE("1", "请求中"),
+    REQ("1", "请求中"),
     AGREE("2", "已同意"),
     IGNORE("3", "已忽略");
 

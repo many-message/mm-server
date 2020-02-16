@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * Description
  * <p> 用户模块
@@ -82,5 +84,15 @@ public class UserController {
     public RespVO updatePwd(@Validated @RequestBody UserUpdatePwdParam userUpdatePwdParam,
                             @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return userService.updatePwd(userUpdatePwdParam, userId);
+    }
+
+    /**
+     * 搜索用户
+     * @param keyword
+     * @return
+     */
+    @GetMapping("/users/{keyword}")
+    public RespVO<List<UserVO>> searchUser(@PathVariable("keyword") String keyword) {
+        return userService.searchUser(keyword);
     }
 }

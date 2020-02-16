@@ -1,7 +1,7 @@
 package cn.finull.mm.server.service;
 
 import cn.finull.mm.server.common.enums.FriendReqStatusEnum;
-import cn.finull.mm.server.param.privates.PrivateFriendReqAddParam;
+import cn.finull.mm.server.param.privates.FriendReqAddPrivateParam;
 import cn.finull.mm.server.vo.FriendReqVO;
 import cn.finull.mm.server.vo.resp.RespVO;
 
@@ -19,10 +19,10 @@ public interface FriendReqService {
 
     /**
      * 添加好友请求
-     * @param privateFriendReqAddParam
+     * @param friendReqAddPrivateParam
      * @return 请求方用户信息
      */
-    RespVO<FriendReqVO> addFriendReq(PrivateFriendReqAddParam privateFriendReqAddParam);
+    RespVO<FriendReqVO> addFriendReq(FriendReqAddPrivateParam friendReqAddPrivateParam);
 
     /**
      * 修改好友请求状态

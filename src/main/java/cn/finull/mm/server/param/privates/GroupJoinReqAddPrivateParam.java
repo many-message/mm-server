@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -13,16 +14,17 @@ import javax.validation.constraints.NotNull;
  * Copyright (C) HPE, All rights reserved.
  *
  * @author Ma, Chenxi
- * @date 2020-02-14 16:58
+ * @date 2020-02-16 12:10
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PrivateFriendReqAddParam {
+public class GroupJoinReqAddPrivateParam {
     @NotNull
     private Long reqUserId;
     @NotNull
-    private Long recUserId;
-    @Length(max = 255)
+    private Long groupId;
+    @NotBlank
+    @Length(max = 64)
     private String reqMsg;
 }

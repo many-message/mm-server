@@ -31,6 +31,9 @@ public class GroupJoinInvite {
     @Column(name = "group_id", nullable = false)
     private Long groupId;
 
+    @Column(name = "req_user_id", nullable = false)
+    private Long reqUserId;
+
     @Column(name = "invite_user_id", nullable = false)
     private Long inviteUserId;
 
@@ -43,4 +46,13 @@ public class GroupJoinInvite {
 
     @Column(name = "update_time", nullable = false)
     private Date updateTime;
+
+    public GroupJoinInvite(Long groupId, Long reqUserId, Long inviteUserId) {
+        this.groupId = groupId;
+        this.reqUserId = reqUserId;
+        this.inviteUserId = inviteUserId;
+        groupJoinInviteStatus = GroupJoinInviteStatusEnum.INVITE;
+        createTime = new Date();
+        updateTime = new Date();
+    }
 }

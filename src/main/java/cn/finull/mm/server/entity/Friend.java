@@ -49,7 +49,7 @@ public class Friend {
         friendName = "";
         this.userId = userId;
         this.friendUserId = friendUserId;
-        groupId = 0L;
+        friendGroupId = 0L;
         createTime = new Date();
         updateTime = new Date();
     }

@@ -1,12 +1,17 @@
 package cn.finull.mm.server.service;
 
+import cn.finull.mm.server.common.enums.UserStatusEnum;
 import cn.finull.mm.server.param.UserLoginParam;
 import cn.finull.mm.server.param.UserRegisterParam;
 import cn.finull.mm.server.param.UserUpdateParam;
 import cn.finull.mm.server.param.UserUpdatePwdParam;
 import cn.finull.mm.server.vo.UserLoginVO;
 import cn.finull.mm.server.vo.UserVO;
+import cn.finull.mm.server.vo.admin.UserAdminVO;
+import cn.finull.mm.server.vo.resp.PageVO;
 import cn.finull.mm.server.vo.resp.RespVO;
+
+import java.util.List;
 
 /**
  * Description
@@ -47,4 +52,37 @@ public interface UserService {
      * @return
      */
     RespVO updatePwd(UserUpdatePwdParam userUpdatePwdParam, Long userId);
+
+    /**
+     * 搜索用户
+     * @param keyword
+     * @return
+     */
+    RespVO<List<UserVO>> searchUser(String keyword);
+
+    // admin
+
+    /**
+     * 获取所有用户列表
+     * @param keyword
+     * @param page
+     * @param size
+     * @return
+     */
+    RespVO<PageVO<UserAdminVO>> getUsers(String keyword, Integer page, Integer size);
+
+    /**
+     * 修改用户状态
+     * @param userId
+     * @param userStatus
+     * @return
+     */
+    RespVO<UserAdminVO> updateUserStatus(Long userId, UserStatusEnum userStatus);
+
+    /**
+     * 重置用户密码
+     * @param userId
+     * @return
+     */
+    RespVO resetUserPwd(Long userId);
 }

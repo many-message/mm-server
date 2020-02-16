@@ -1,7 +1,7 @@
 package cn.finull.mm.server.controller.privates;
 
 import cn.finull.mm.server.common.enums.FriendReqStatusEnum;
-import cn.finull.mm.server.param.privates.PrivateFriendReqAddParam;
+import cn.finull.mm.server.param.privates.FriendReqAddPrivateParam;
 import cn.finull.mm.server.service.FriendReqService;
 import cn.finull.mm.server.vo.FriendReqVO;
 import cn.finull.mm.server.vo.resp.RespVO;
@@ -21,18 +21,18 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/private/api")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class PrivateFriendReqController {
+public class FriendReqPrivateController {
 
     private final FriendReqService friendReqService;
 
     /**
      * 添加一条好友请求记录
-     * @param privateFriendReqAddParam
+     * @param friendReqAddPrivateParam
      * @return 请求信息
      */
     @PostMapping("/friend-reqs")
-    public RespVO<FriendReqVO> addFriendReq(@Validated @RequestBody PrivateFriendReqAddParam privateFriendReqAddParam) {
-        return friendReqService.addFriendReq(privateFriendReqAddParam);
+    public RespVO<FriendReqVO> addFriendReq(@Validated @RequestBody FriendReqAddPrivateParam friendReqAddPrivateParam) {
+        return friendReqService.addFriendReq(friendReqAddPrivateParam);
     }
 
     /**
