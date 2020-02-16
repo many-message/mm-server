@@ -90,7 +90,7 @@ public class GroupServiceImpl implements GroupService {
             return RespUtil.OK(List.of());
         }
 
-        List<GroupVO> groups = groupRepository.findAllByGroupIdInAndOrderByCreateTimeDesc(groupIds)
+        List<GroupVO> groups = groupRepository.findAllByGroupIdInOrderByCreateTimeDesc(groupIds)
                 .stream()
                 .map(this::buildGroupVO)
                 .collect(Collectors.toList());

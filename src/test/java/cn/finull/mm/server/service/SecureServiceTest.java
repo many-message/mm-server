@@ -1,5 +1,6 @@
 package cn.finull.mm.server.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Ma, Chenxi
  * @date 2020-02-14 11:48
  */
+@Slf4j
 @SpringBootTest
 class SecureServiceTest {
 
@@ -35,10 +37,10 @@ class SecureServiceTest {
 
     @Test
     public void testBCrypt() {
-        String pwd = "123456";
+        String pwd = "admin123456";
 
         String hashed = secureService.hashByBCrypt(pwd);
-
+        log.info("pwd:[{}]", hashed);
         assertTrue(secureService.checkByBCrypt(pwd, hashed));
     }
 }

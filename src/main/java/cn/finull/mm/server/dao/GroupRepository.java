@@ -19,7 +19,7 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 
     boolean existsByGroupNum(String groupNum);
 
-    List<Group> findAllByGroupIdInAndOrderByCreateTimeDesc(List<Long> groupIds);
+    List<Group> findAllByGroupIdInOrderByCreateTimeDesc(List<Long> groupIds);
 
     List<Group> findAllByGroupNumOrGroupNameLike(String groupNum, String groupName);
 
