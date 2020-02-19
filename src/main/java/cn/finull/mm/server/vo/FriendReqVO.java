@@ -22,7 +22,6 @@ public class FriendReqVO {
     private Long friendReqId;
 
     private UserVO reqUser;
-    private UserVO recUser;
 
     private String reqMsg;
     private FriendReqStatusEnum friendReqStatus;

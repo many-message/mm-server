@@ -72,7 +72,7 @@ public class FriendReqServiceImpl implements FriendReqService {
 
         friendReqRepository.save(friendReq);
 
-        return RespUtil.OK(buildFriendReqVO(friendReq, reqUser, recUser));
+        return RespUtil.OK(buildFriendReqVO(friendReq, reqUser));
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -119,11 +119,10 @@ public class FriendReqServiceImpl implements FriendReqService {
 
     private FriendReqVO buildFriendReqVO(FriendReq friendReq) {
         User reqUser = userRepository.getOne(friendReq.getReqUserId());
-        User recUser = userRepository.getOne(friendReq.getRecUserId());
-        return buildFriendReqVO(friendReq, reqUser, recUser);
+        return buildFriendReqVO(friendReq, reqUser);
     }
 
-    private FriendReqVO buildFriendReqVO(FriendReq friendReq, User reqUser, User recUser) {
+    private FriendReqVO buildFriendReqVO(FriendReq friendReq, User reqUser) {
         // 好友请求信息
         FriendReqVO friendReqVO = new FriendReqVO();
         BeanUtil.copyProperties(friendReq, friendReqVO);
@@ -132,11 +131,6 @@ public class FriendReqServiceImpl implements FriendReqService {
         UserVO reqUserVO = new UserVO();
         BeanUtil.copyProperties(reqUser, reqUserVO);
         friendReqVO.setReqUser(reqUserVO);
-
-        // 接收用户信息
-        UserVO recUserVO = new UserVO();
-        BeanUtil.copyProperties(recUser, recUserVO);
-        friendReqVO.setRecUser(recUserVO);
 
         return friendReqVO;
     }
