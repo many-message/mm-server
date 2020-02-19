@@ -116,6 +116,16 @@ public class GroupMemberServiceImpl implements GroupMemberService {
 
     @Override
     public RespVO leaveGroup(Long groupId, Long userId) {
-        return null;
+        groupMemberRepository.deleteByGroupIdAndUserId(groupId, userId);
+        return RespUtil.OK();
+    }
+
+    @Override
+    public RespVO<List<Long>> getUserIdsByGroupId(Long groupId) {
+        List<Long> userIds = groupMemberRepository.findAllByGroupIdOrderByGroupMemberType(groupId)
+                .parallelStream()
+                .map(GroupMember::getUserId)
+                .collect(Collectors.toList());
+        return RespUtil.OK(userIds);
     }
 }

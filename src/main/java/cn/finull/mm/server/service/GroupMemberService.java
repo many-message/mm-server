@@ -56,4 +56,13 @@ public interface GroupMemberService {
      * @return
      */
     RespVO leaveGroup(Long groupId, Long userId);
+
+    // private
+
+    /**
+     * 获取一个群的所有用户
+     * @param groupId
+     * @return
+     */
+    RespVO<List<Long>> getUserIdsByGroupId(Long groupId);
 }

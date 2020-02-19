@@ -3,6 +3,7 @@ package cn.finull.mm.server.dao;
 import cn.finull.mm.server.common.enums.GroupMemberTypeEnum;
 import cn.finull.mm.server.entity.GroupMember;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -33,4 +34,7 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> 
     List<GroupMember> findAllByGroupIdAndGroupMemberTypeNot(Long groupId, GroupMemberTypeEnum groupMemberType);
 
     List<GroupMember> findAllByUserIdAndGroupMemberTypeNot(Long userId, GroupMemberTypeEnum groupMemberType);
+
+    @Transactional
+    void deleteByGroupIdAndUserId(Long groupId, Long userId);
 }
