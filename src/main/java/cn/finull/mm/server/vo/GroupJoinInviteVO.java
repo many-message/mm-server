@@ -22,7 +22,7 @@ public class GroupJoinInviteVO {
     private Long groupJoinInviteId;
     private GroupVO group;
     private UserVO reqUser;
-    private UserVO inviteUser;
+    private Long inviteUserId;
     private GroupJoinInviteStatusEnum groupJoinInviteStatus;
     private Date createTime;
     private Date updateTime;

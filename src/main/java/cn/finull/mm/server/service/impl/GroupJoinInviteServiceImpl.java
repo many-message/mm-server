@@ -65,7 +65,7 @@ public class GroupJoinInviteServiceImpl implements GroupJoinInviteService {
         GroupJoinInvite groupJoinInvite = new GroupJoinInvite(group.getGroupId(), reqUser.getUserId(), inviteUser.getUserId());
         groupJoinInviteRepository.save(groupJoinInvite);
 
-        return RespUtil.OK(buildGroupJoinInviteVO(groupJoinInvite, group, reqUser, inviteUser));
+        return RespUtil.OK(buildGroupJoinInviteVO(groupJoinInvite, group, reqUser, inviteUser.getUserId()));
     }
 
     @Override
@@ -106,11 +106,10 @@ public class GroupJoinInviteServiceImpl implements GroupJoinInviteService {
     private GroupJoinInviteVO buildGroupJoinInviteVO(GroupJoinInvite groupJoinInvite) {
         Group group =groupRepository.getOne(groupJoinInvite.getGroupId());
         User reqUser = userRepository.getOne(groupJoinInvite.getReqUserId());
-        User inviteUser = userRepository.getOne(groupJoinInvite.getInviteUserId());
-        return buildGroupJoinInviteVO(groupJoinInvite, group, reqUser, inviteUser);
+        return buildGroupJoinInviteVO(groupJoinInvite, group, reqUser, groupJoinInvite.getInviteUserId());
     }
 
-    private GroupJoinInviteVO buildGroupJoinInviteVO(GroupJoinInvite groupJoinInvite, Group group, User reqUser, User inviteUser) {
+    private GroupJoinInviteVO buildGroupJoinInviteVO(GroupJoinInvite groupJoinInvite, Group group, User reqUser, Long inviteUserId) {
         GroupJoinInviteVO groupJoinInviteVO = new GroupJoinInviteVO();
         BeanUtil.copyProperties(groupJoinInvite, groupJoinInviteVO);
 
@@ -122,9 +121,7 @@ public class GroupJoinInviteServiceImpl implements GroupJoinInviteService {
         BeanUtil.copyProperties(reqUser, reqUserVO);
         groupJoinInviteVO.setReqUser(reqUserVO);
 
-        UserVO inviteUserVO = new UserVO();
-        BeanUtil.copyProperties(inviteUser, inviteUserVO);
-        groupJoinInviteVO.setInviteUser(inviteUserVO);
+        groupJoinInviteVO.setInviteUserId(inviteUserId);
 
         return groupJoinInviteVO;
     }
