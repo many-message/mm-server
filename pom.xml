@@ -20,16 +20,10 @@
 
     <repositories>
         <repository>
-            <id>maven-ali</id>
+            <id>central</id>
+            <name>aliyun maven</name>
             <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>fail</checksumPolicy>
-            </snapshots>
+            <layout>default</layout>
         </repository>
     </repositories>
 
