@@ -2,7 +2,7 @@ FROM adoptopenjdk:11-jre-hotspot
 
 VOLUME /upload
 
-COPY *.jar ./
+COPY target/*.jar ./
 
 ENV JVM_ARGS="-Xms256m -Xmx1024m"
 ENV CMD_LINE_ARGS="--spring.profiles.active=dev"
