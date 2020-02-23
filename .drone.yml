@@ -1,0 +1,25 @@
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: maven_package
+    image: maven:3.6.3-jdk-11
+    commands:
+      - mvn clean package -DskipTests -U
+
+  - name: docker_run
+    image: docker:stable-dind
+    commands:
+      - docker ps | grep mm-server:v1 | awk '{docker container stop $1}'
+      - docker ps -a | grep mm-server:v1 | awk '{docker container rm $1}'
+      - docker build -t mm-server:v1 target
+      - docker run -dit -p 8080:8080 -v /home/ubunt/mm-server/upload:/upload --name mm-server mm-server:v1
+      - docker ps -a | grep mm-server:v1
+
+trigger:
+  branch:
+    - master
+  event:
+    - push
+
