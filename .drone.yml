@@ -5,26 +5,33 @@ name: default
 steps:
   - name: maven_package
     image: maven:3.6.3-jdk-11
+    privileged: true
     commands:
-      - find $HOME/.m2/repository -name '*.lastUpdated' | xargs rm -rf
       - mvn clean package -DskipTests -U
     volumes:
-      - name: drone_home
-        path: /root
+      - name: drone_maven_repository
+        path: /usr/share/maven/ref/repository
 
   - name: docker_run
     image: docker:stable-dind
+    privileged: true
     commands:
       - docker ps | grep mm-server:v1 | awk '{docker container stop $1}'
       - docker ps -a | grep mm-server:v1 | awk '{docker container rm $1}'
       - docker build -t mm-server:v1 .
       - docker run -dit -p 8080:8080 -v /home/ubunt/mm-server/upload:/upload --name mm-server mm-server:v1
       - docker ps -a | grep mm-server:v1
+    volumes:
+      - name: docker
+        path: /var/run/docker.sock
 
 volumes:
-  - name: drone_home
+  - name: drone_maven_repository
     host:
-      path: /home/ubuntu/data/drone/home
+      path: /home/ubuntu/drone-maven-repository
+  - name: docker
+    host:
+      path: /var/run/docker.sock
 
 trigger:
   branch:
