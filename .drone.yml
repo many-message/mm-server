@@ -10,7 +10,8 @@ steps:
       - mvn clean package -DskipTests -U
     volumes:
       - name: drone_maven_repository
-        path: /usr/share/maven/ref/repository
+        path: /root/.m2/repository
+#        path: /usr/share/maven/ref/repository
 
   - name: docker_run
     image: docker:stable-dind
