@@ -7,6 +7,9 @@ steps:
     image: maven:3.6.3-jdk-11
     commands:
       - mvn clean package -DskipTests -U
+    volumes:
+      - name: drone_maven_repository
+        path: /usr/share/maven/ref/repository
 
   - name: docker_run
     image: docker:stable-dind
@@ -16,6 +19,11 @@ steps:
       - docker build -t mm-server:v1 .
       - docker run -dit -p 8080:8080 -v /home/ubunt/mm-server/upload:/upload --name mm-server mm-server:v1
       - docker ps -a | grep mm-server:v1
+
+volumes:
+  - name: drone_maven_repository
+    host:
+      path: /home/ubuntu/drone-maven-repository
 
 trigger:
   branch:
