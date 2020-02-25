@@ -17,7 +17,7 @@ steps:
     privileged: true
     commands:
       - if [ $(docker ps -a | grep 'mm-server' | awk '{print $1}') ]; then docker rm -f mm-server; fi
-      - if [ $(docker images | grep 'mm-server:v1' | awk '{print $3}') ]; then docker rmi mm-server:v1; fi
+      - if [ $(docker images | grep 'mm-server' | awk '{print $3}') ]; then docker rmi mm-server:v1; fi
       - docker build -t mm-server:v1 .
       - docker run -dit -p 8080:8080 -v /mm-server/upload:/upload --name mm-server mm-server:v1
       - docker ps -a | grep mm-server:v1
