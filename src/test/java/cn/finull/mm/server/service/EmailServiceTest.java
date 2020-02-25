@@ -23,7 +23,6 @@ class EmailServiceTest {
      */
     @Test
     void sendSimpleMail() {
-        // 发送邮件
         emailService.sendCode("chenxi1970@163.com");
     }
 }
