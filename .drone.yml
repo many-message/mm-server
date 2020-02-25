@@ -16,9 +16,8 @@ steps:
     image: docker:stable-dind
     privileged: true
     commands:
-      - docker ps | grep mm-server:v1 | awk '{docker container stop $1}'
-      - docker ps -a | grep mm-server:v1 | awk '{docker container rm $1}'
-      - docker images | grep mm-server | awk '{docker image rm $3}'
+      - docker rm -f mm-server
+      - docker rmi mm-server:v1
       - docker build -t mm-server:v1 .
       - docker run -dit -p 8080:8080 -v /home/ubunt/mm-server/upload:/upload --name mm-server mm-server:v1
       - docker ps -a | grep mm-server:v1
