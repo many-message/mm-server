@@ -11,7 +11,7 @@ mm-config:
   # 上传文件的资源访问路径
   file-upload-access-path: /upload/**
   # 访问上传资源的前缀
-  file-http-prefix: http://localhost:8080/upload/
+  file-http-prefix: http://94.191.66.92/:8080/upload/
   # rsa公钥
   rsa-public-key: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCAVWBbicHAiQ4Z7ktCm8Ui4fqbGhKfw9ZKbkhtR7VeugGO9Bo9Z31KCwefrLoD/iIO29sAVn973u1KXil93B01Wd3zK5kNiGb+I3ubB1QzGivnpGPjbLGaeruau6aG7WtaO861KSo7U0AvBAfG3ZmqrsT63HOCjJMc2TdxlIBEOwIDAQAB
   # rsa私钥

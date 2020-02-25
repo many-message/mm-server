@@ -16,14 +16,16 @@ steps:
     image: docker:stable-dind
     privileged: true
     commands:
-      - docker rm -f mm-server
-      - docker rmi mm-server:v1
+      - if [ $(docker ps -a | grep 'mm-server' | awk '{print $1}') ]; then docker rm -f mm-server; fi
+      - if [ $(docker images | grep 'mm-server:v1' | awk '{print $3}') ]; then docker rmi mm-server:v1; fi
       - docker build -t mm-server:v1 .
-      - docker run -dit -p 8080:8080 -v /home/ubunt/mm-server/upload:/upload --name mm-server mm-server:v1
+      - docker run -dit -p 8080:8080 -v /mm-server/upload:/upload --name mm-server mm-server:v1
       - docker ps -a | grep mm-server:v1
     volumes:
       - name: docker
         path: /var/run/docker.sock
+      - name: mm_server_upload
+        path: /mm-server/upload
 
 volumes:
   - name: drone_maven_repository
@@ -32,6 +34,9 @@ volumes:
   - name: docker
     host:
       path: /var/run/docker.sock
+  - name: mm_server_upload
+    host:
+      path: /home/ubuntu/mm-server/upload
 
 trigger:
   branch:
