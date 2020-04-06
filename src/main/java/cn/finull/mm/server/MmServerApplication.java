@@ -3,6 +3,7 @@ package cn.finull.mm.server;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
@@ -13,6 +14,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @author Ma, Chenxi
  * @date 2020-02-13 21:26
  */
+@EnableAsync
 @EnableScheduling
 @EnableCaching
 @SpringBootApplication

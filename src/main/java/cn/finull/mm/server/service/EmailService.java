@@ -18,4 +18,12 @@ public interface EmailService {
      * @return
      */
     RespVO sendCode(String email);
+
+    /**
+     * 异步发送邮件
+     * @param to 目标邮件
+     * @param subject 主题
+     * @param text 正文
+     */
+    void sendSimpleMail(String to, String subject, String text);
 }

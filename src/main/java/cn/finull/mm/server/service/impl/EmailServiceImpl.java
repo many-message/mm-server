@@ -6,10 +6,12 @@ import cn.finull.mm.server.util.RespUtil;
 import cn.finull.mm.server.vo.resp.RespVO;
 import cn.hutool.core.util.RandomUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
  * @author Ma, Chenxi
  * @date 2020-02-14 14:33
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EmailServiceImpl implements EmailService {
@@ -42,12 +45,16 @@ public class EmailServiceImpl implements EmailService {
         return RespUtil.OK();
     }
 
-    private void sendSimpleMail(String to, String subject, String text) {
+    @Async
+    @Override
+    public void sendSimpleMail(String to, String subject, String text) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setFrom(String.format("mm<%s>", from));
         mailMessage.setTo(to);
         mailMessage.setSubject(subject);
         mailMessage.setText(text);
+        log.info("开始向{}发送邮件！", to);
         javaMailSender.send(mailMessage);
+        log.info("成功向{}发送邮件！", to);
     }
 }
