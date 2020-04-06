@@ -7,6 +7,7 @@ import cn.finull.mm.server.param.UserUpdateParam;
 import cn.finull.mm.server.param.UserUpdatePwdParam;
 import cn.finull.mm.server.service.EmailService;
 import cn.finull.mm.server.service.UserService;
+import cn.finull.mm.server.util.RespUtil;
 import cn.finull.mm.server.vo.UserLoginVO;
 import cn.finull.mm.server.vo.UserVO;
 import cn.finull.mm.server.vo.resp.RespVO;
@@ -40,7 +41,8 @@ public class UserController {
      */
     @GetMapping("/codes/{email}")
     public RespVO sendCode(@PathVariable("email") String email) {
-        return emailService.sendCode(email);
+        emailService.sendCode(email);
+        return RespUtil.OK();
     }
 
     /**

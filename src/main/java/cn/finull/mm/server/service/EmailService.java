@@ -1,7 +1,5 @@
 package cn.finull.mm.server.service;
 
-import cn.finull.mm.server.vo.resp.RespVO;
-
 /**
  * Description
  * <p>
@@ -13,17 +11,10 @@ import cn.finull.mm.server.vo.resp.RespVO;
 public interface EmailService {
 
     /**
+     * 异步调用
      * 向邮箱发送验证码
      * @param email 邮箱
      * @return
      */
-    RespVO sendCode(String email);
-
-    /**
-     * 异步发送邮件
-     * @param to 目标邮件
-     * @param subject 主题
-     * @param text 正文
-     */
-    void sendSimpleMail(String to, String subject, String text);
+    void sendCode(String email);
 }

@@ -2,8 +2,6 @@ package cn.finull.mm.server.service.impl;
 
 import cn.finull.mm.server.service.EmailService;
 import cn.finull.mm.server.util.CacheUtil;
-import cn.finull.mm.server.util.RespUtil;
-import cn.finull.mm.server.vo.resp.RespVO;
 import cn.hutool.core.util.RandomUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +30,9 @@ public class EmailServiceImpl implements EmailService {
     @Value("${spring.mail.username}")
     private String from;
 
+    @Async
     @Override
-    public RespVO sendCode(String email) {
+    public void sendCode(String email) {
         String code = RandomUtil.randomNumbers(6);
         CacheUtil.putEmailAndCode(email, code);
 
@@ -41,12 +40,8 @@ public class EmailServiceImpl implements EmailService {
         String text = String.format("Your verification code is: %s", code);
 
         sendSimpleMail(email, subject, text);
-
-        return RespUtil.OK();
     }
 
-    @Async
-    @Override
     public void sendSimpleMail(String to, String subject, String text) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setFrom(String.format("mm<%s>", from));

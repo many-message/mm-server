@@ -22,4 +22,3 @@ mm-config:
 logging:
   file:
     path: /upload/logs
-    name: app.log
