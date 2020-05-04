@@ -7,19 +7,12 @@ spring:
     properties:
       hibernate.format-sql: true
       open-in-view: false
-    show-sql: true
   cache:
     type: caffeine
     caffeine:
       spec: initialCapacity=10,maximumSize=500,expireAfterAccess=30s
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
-    serialization:
-      #忽略无法转换的对象
-      fail_on_empty_beans: false
-    deserialization:
-      #允许对象忽略json中不存在的属性
-      fail_on_unknown_properties: false
   # 邮件发送配置
   mail:
     host: smtp.163.com

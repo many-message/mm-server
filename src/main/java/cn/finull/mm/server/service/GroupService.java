@@ -3,9 +3,10 @@ package cn.finull.mm.server.service;
 import cn.finull.mm.server.common.enums.GroupStatusEnum;
 import cn.finull.mm.server.param.GroupAddParam;
 import cn.finull.mm.server.param.GroupUpdateParam;
+import cn.finull.mm.server.param.enums.GroupQueryTypeEnum;
 import cn.finull.mm.server.vo.GroupVO;
-import cn.finull.mm.server.vo.resp.PageVO;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.PageVO;
+import cn.finull.mm.server.common.vo.RespVO;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public interface GroupService {
      * @param userId
      * @return
      */
-    RespVO<GroupVO> addGroup(GroupAddParam groupAddParam, Long userId);
+    RespVO<List<GroupVO>> addGroup(GroupAddParam groupAddParam, Long userId);
 
     /**
      * 修改群
@@ -37,10 +38,11 @@ public interface GroupService {
 
     /**
      * 获取自己的所有群
+     * @param type 1-我的群聊；2-我加入的群聊
      * @param userId
      * @return
      */
-    RespVO<List<GroupVO>> getGroups(Long userId);
+    RespVO<List<GroupVO>> getGroups(GroupQueryTypeEnum type, Long userId);
 
     /**
      * 搜索群

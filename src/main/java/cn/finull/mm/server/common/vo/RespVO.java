@@ -1,5 +1,6 @@
-package cn.finull.mm.server.vo.resp;
+package cn.finull.mm.server.common.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -35,5 +36,11 @@ public class RespVO<T> {
         this.code = code;
         this.message = message;
         this.data = data;
+        this.errors = List.of();
+    }
+
+    @JsonIgnore
+    public Boolean isOk() {
+        return false;
     }
 }

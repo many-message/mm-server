@@ -1,6 +1,6 @@
 package cn.finull.mm.server.service.impl;
 
-import cn.finull.mm.server.common.constant.RespCodeConstant;
+import cn.finull.mm.server.common.constant.RespCode;
 import cn.finull.mm.server.common.enums.GroupJoinReqStatusEnum;
 import cn.finull.mm.server.common.enums.GroupMemberTypeEnum;
 import cn.finull.mm.server.dao.GroupJoinReqRepository;
@@ -13,11 +13,11 @@ import cn.finull.mm.server.entity.GroupMember;
 import cn.finull.mm.server.entity.User;
 import cn.finull.mm.server.param.privates.GroupJoinReqAddPrivateParam;
 import cn.finull.mm.server.service.GroupJoinReqService;
-import cn.finull.mm.server.util.RespUtil;
+import cn.finull.mm.server.common.util.RespUtil;
 import cn.finull.mm.server.vo.GroupVO;
 import cn.finull.mm.server.vo.UserVO;
 import cn.finull.mm.server.vo.GroupJoinReqVO;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.RespVO;
 import cn.hutool.core.bean.BeanUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,13 +49,13 @@ public class GroupJoinReqServiceImpl implements GroupJoinReqService {
     @Override
     public RespVO<GroupJoinReqVO> joinGroup(GroupJoinReqAddPrivateParam groupJoinReqAddPrivateParam) {
         if (groupMemberRepository.existsByGroupIdAndUserId(groupJoinReqAddPrivateParam.getGroupId(), groupJoinReqAddPrivateParam.getReqUserId())) {
-            return RespUtil.error(RespCodeConstant.ACCESS_FORBID, "已在群内！");
+            return RespUtil.error(RespCode.FORBIDDEN, "已在群内！");
         }
 
         Optional<Group> groupOptional = groupRepository.findById(groupJoinReqAddPrivateParam.getGroupId());
         Optional<User> userOptional = userRepository.findById(groupJoinReqAddPrivateParam.getReqUserId());
         if (groupOptional.isEmpty() || userOptional.isEmpty()) {
-            return RespUtil.error(RespCodeConstant.NOT_FOUND, RespCodeConstant.NOT_FOUND_MSG);
+            return RespUtil.error(RespCode.NOT_FOUND);
         }
 
         Group group = groupOptional.get();
@@ -79,7 +79,7 @@ public class GroupJoinReqServiceImpl implements GroupJoinReqService {
     public RespVO<GroupJoinReqVO> updateGroupReqStatus(Long groupJoinReqId, GroupJoinReqStatusEnum groupJoinReqStatus) {
         Optional<GroupJoinReq> groupJoinReqOptional = groupJoinReqRepository.findById(groupJoinReqId);
         if (groupJoinReqOptional.isEmpty()) {
-            return RespUtil.error(RespCodeConstant.NOT_FOUND, RespCodeConstant.NOT_FOUND_MSG);
+            return RespUtil.error(RespCode.NOT_FOUND);
         }
 
         GroupJoinReq groupJoinReq = groupJoinReqOptional.get();
@@ -103,7 +103,7 @@ public class GroupJoinReqServiceImpl implements GroupJoinReqService {
 
     @Override
     public RespVO<List<GroupJoinReqVO>> getGroupJoinReqs(Long userId) {
-        List<Long> groupIds = groupMemberRepository.findAllByUserIdAndGroupMemberTypeNot(userId, GroupMemberTypeEnum.ORDINARY)
+        List<Long> groupIds = groupMemberRepository.findByUserIdAndGroupMemberTypeNot(userId, GroupMemberTypeEnum.ORDINARY)
                 .stream()
                 .map(GroupMember::getGroupId)
                 .collect(Collectors.toList());

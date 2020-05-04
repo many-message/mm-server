@@ -3,7 +3,7 @@ package cn.finull.mm.server.service;
 import cn.finull.mm.server.common.enums.GroupJoinInviteStatusEnum;
 import cn.finull.mm.server.param.privates.GroupJoinInviteAddPrivateParam;
 import cn.finull.mm.server.vo.GroupJoinInviteVO;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.RespVO;
 
 import java.util.List;
 

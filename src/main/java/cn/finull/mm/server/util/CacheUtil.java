@@ -24,7 +24,7 @@ public final class CacheUtil {
             .initialCapacity(10)
             .maximumSize(100)
             // 过期时间为最后一次访问后半小时
-            .expireAfterAccess(30, TimeUnit.MINUTES)
+            .expireAfterAccess(1, TimeUnit.HOURS)
             .build(token -> null);
 
     public static void putTokenAndId(String token, Long id) {

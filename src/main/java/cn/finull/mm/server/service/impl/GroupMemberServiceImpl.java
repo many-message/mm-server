@@ -1,16 +1,16 @@
 package cn.finull.mm.server.service.impl;
 
-import cn.finull.mm.server.common.constant.RespCodeConstant;
+import cn.finull.mm.server.common.constant.RespCode;
 import cn.finull.mm.server.common.enums.GroupMemberTypeEnum;
 import cn.finull.mm.server.dao.GroupMemberRepository;
 import cn.finull.mm.server.dao.UserRepository;
 import cn.finull.mm.server.entity.GroupMember;
 import cn.finull.mm.server.entity.User;
 import cn.finull.mm.server.service.GroupMemberService;
-import cn.finull.mm.server.util.RespUtil;
+import cn.finull.mm.server.common.util.RespUtil;
 import cn.finull.mm.server.vo.GroupMemberVO;
 import cn.finull.mm.server.vo.UserVO;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.RespVO;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.RequiredArgsConstructor;
@@ -50,12 +50,12 @@ public class GroupMemberServiceImpl implements GroupMemberService {
     public RespVO<GroupMemberVO> updateGroupMemberType(Long groupMemberId, GroupMemberTypeEnum groupMemberType, Long userId) {
         Optional<GroupMember> groupMemberOptional = groupMemberRepository.findById(groupMemberId);
         if (groupMemberOptional.isEmpty()) {
-            return RespUtil.error(RespCodeConstant.NOT_FOUND, "成员不存在！");
+            return RespUtil.error(RespCode.NOT_FOUND, "成员不存在！");
         }
 
         GroupMember groupMember = groupMemberOptional.get();
         if (!groupMemberRepository.existsByGroupIdAndUserIdAndGroupMemberType(groupMember.getGroupId(), userId, GroupMemberTypeEnum.OWNER)) {
-            return RespUtil.error(RespCodeConstant.ACCESS_FORBID, "权限不足！");
+            return RespUtil.error(RespCode.FORBIDDEN);
         }
 
         groupMember.setGroupMemberType(groupMemberType);
@@ -69,13 +69,13 @@ public class GroupMemberServiceImpl implements GroupMemberService {
     public RespVO<GroupMemberVO> updateGroupMemberName(Long groupMemberId, String groupName, Long userId) {
         Optional<GroupMember> groupMemberOptional = groupMemberRepository.findById(groupMemberId);
         if (groupMemberOptional.isEmpty()) {
-            return RespUtil.error(RespCodeConstant.NOT_FOUND, "成员不存在！");
+            return RespUtil.error(RespCode.NOT_FOUND, "成员不存在！");
         }
 
         GroupMember groupMember = groupMemberOptional.get();
         if (ObjectUtil.notEqual(groupMember.getUserId(), userId) &&
                 !groupMemberRepository.existsByGroupIdAndUserIdAndGroupMemberTypeNot(groupMember.getGroupId(), userId, GroupMemberTypeEnum.ORDINARY)) {
-            return RespUtil.error(RespCodeConstant.ACCESS_FORBID, "权限不足！");
+            return RespUtil.error(RespCode.FORBIDDEN);
         }
 
         groupMember.setGroupMemberName(groupName);
@@ -101,12 +101,12 @@ public class GroupMemberServiceImpl implements GroupMemberService {
     public RespVO deleteGroupMember(Long groupMemberId, Long userId) {
         Optional<GroupMember> groupMemberOptional = groupMemberRepository.findById(groupMemberId);
         if (groupMemberOptional.isEmpty()) {
-            return RespUtil.error(RespCodeConstant.NOT_FOUND, "成员不存在！");
+            return RespUtil.error(RespCode.NOT_FOUND, "成员不存在！");
         }
 
         GroupMember groupMember = groupMemberOptional.get();
         if (ObjectUtil.equal(groupMember.getUserId(), userId) || !groupMemberRepository.existsByGroupIdAndUserIdAndGroupMemberTypeNot(groupMember.getGroupId(), userId, GroupMemberTypeEnum.ORDINARY)) {
-            return RespUtil.error(RespCodeConstant.ACCESS_FORBID, "权限不足！");
+            return RespUtil.error(RespCode.FORBIDDEN);
         }
 
         groupMemberRepository.delete(groupMember);

@@ -4,7 +4,7 @@ import cn.finull.mm.server.common.constant.RequestConstant;
 import cn.finull.mm.server.param.FriendGroupUpdateParam;
 import cn.finull.mm.server.service.FriendGroupService;
 import cn.finull.mm.server.vo.FriendGroupVO;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.RespVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -33,7 +33,7 @@ public class FriendGroupController {
      * @return
      */
     @GetMapping("/friend-groups")
-    public RespVO<List<FriendGroupVO>> getFriendGroups(Long userId) {
+    public RespVO<List<FriendGroupVO>> getFriendGroups(@RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return friendGroupService.getFriendGroups(userId);
     }
 
@@ -44,7 +44,7 @@ public class FriendGroupController {
      * @return
      */
     @PutMapping("/friend-groups")
-    public RespVO<FriendGroupVO> updateFriendGroup(@Validated @RequestBody FriendGroupUpdateParam friendGroupUpdateParam,
+    public RespVO<List<FriendGroupVO>> updateFriendGroup(@Validated @RequestBody FriendGroupUpdateParam friendGroupUpdateParam,
                                                    @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return friendGroupService.updateFriendGroup(friendGroupUpdateParam, userId);
     }
@@ -56,19 +56,19 @@ public class FriendGroupController {
      * @return
      */
     @PostMapping("/friend-groups/{friendGroupName}")
-    public RespVO<FriendGroupVO> addFriendGroup(@PathVariable("friendGroupName") String friendGroupName,
+    public RespVO<List<FriendGroupVO>> addFriendGroup(@PathVariable("friendGroupName") String friendGroupName,
                                                 @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return friendGroupService.addFriendGroup(friendGroupName, userId);
     }
 
     /**
      * 删除一个好友分组
-     * @param friendGroupId
+     * @param friendGroupId 分组ID
      * @param userId
      * @return
      */
     @DeleteMapping("/friend-groups/{friendGroupId}")
-    public RespVO deleteFriendGroup(@PathVariable("friendGroupId") Long friendGroupId,
+    public RespVO<List<FriendGroupVO>> deleteFriendGroup(@PathVariable("friendGroupId") Long friendGroupId,
                                     @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return friendGroupService.deleteFriendGroup(friendGroupId, userId);
     }

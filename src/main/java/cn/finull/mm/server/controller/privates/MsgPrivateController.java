@@ -2,7 +2,7 @@ package cn.finull.mm.server.controller.privates;
 
 import cn.finull.mm.server.param.privates.MsgAddPrivateParam;
 import cn.finull.mm.server.service.MsgService;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.RespVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;

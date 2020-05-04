@@ -3,7 +3,7 @@ package cn.finull.mm.server.controller;
 import cn.finull.mm.server.common.constant.RequestConstant;
 import cn.finull.mm.server.service.FriendReqService;
 import cn.finull.mm.server.vo.FriendReqVO;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.RespVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

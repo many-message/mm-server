@@ -1,6 +1,6 @@
 package cn.finull.mm.server.service.impl;
 
-import cn.finull.mm.server.common.constant.RespCodeConstant;
+import cn.finull.mm.server.common.constant.RespCode;
 import cn.finull.mm.server.common.enums.FriendReqStatusEnum;
 import cn.finull.mm.server.dao.FriendRepository;
 import cn.finull.mm.server.dao.FriendReqRepository;
@@ -10,10 +10,10 @@ import cn.finull.mm.server.entity.FriendReq;
 import cn.finull.mm.server.entity.User;
 import cn.finull.mm.server.param.privates.FriendReqAddPrivateParam;
 import cn.finull.mm.server.service.FriendReqService;
-import cn.finull.mm.server.util.RespUtil;
+import cn.finull.mm.server.common.util.RespUtil;
 import cn.finull.mm.server.vo.FriendReqVO;
 import cn.finull.mm.server.vo.UserVO;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.RespVO;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -46,14 +46,14 @@ public class FriendReqServiceImpl implements FriendReqService {
     @Override
     public RespVO<FriendReqVO> addFriendReq(FriendReqAddPrivateParam friendReqAddPrivateParam) {
         if (friendRepository.existsByUserIdAndFriendUserId(friendReqAddPrivateParam.getReqUserId(), friendReqAddPrivateParam.getRecUserId())) {
-            return RespUtil.error(RespCodeConstant.ACCESS_FORBID, "已是好友关系！");
+            return RespUtil.error(RespCode.FORBIDDEN, "已是好友关系！");
         }
 
         Optional<User> reqUserOptional = userRepository.findById(friendReqAddPrivateParam.getReqUserId());
         Optional<User> recUserOptional = userRepository.findById(friendReqAddPrivateParam.getRecUserId());
 
         if (reqUserOptional.isEmpty() || recUserOptional.isEmpty()) {
-            return RespUtil.error(RespCodeConstant.NOT_FOUND, "用户不存在！");
+            return RespUtil.error(RespCode.NOT_FOUND, "用户不存在！");
         }
 
         User reqUser = reqUserOptional.get();
@@ -80,7 +80,7 @@ public class FriendReqServiceImpl implements FriendReqService {
     public RespVO<FriendReqVO> updateFriendReqStatus(Long friendReqId, FriendReqStatusEnum friendReqStatus) {
         Optional<FriendReq> friendReqOptional = friendReqRepository.findById(friendReqId);
         if (friendReqOptional.isEmpty()) {
-            return RespUtil.error(RespCodeConstant.NOT_FOUND, "好友请求不存在！");
+            return RespUtil.error(RespCode.NOT_FOUND, "好友请求不存在！");
         }
 
         FriendReq friendReq = friendReqOptional.get();
@@ -139,12 +139,12 @@ public class FriendReqServiceImpl implements FriendReqService {
     public RespVO deleteFriendReq(Long friendReqId, Long userId) {
         Optional<FriendReq> friendReqOptional = friendReqRepository.findById(friendReqId);
         if (friendReqOptional.isEmpty()) {
-            return RespUtil.error(RespCodeConstant.NOT_FOUND, "好友请求不存在！");
+            return RespUtil.error(RespCode.NOT_FOUND, "好友请求不存在！");
         }
 
         FriendReq friendReq = friendReqOptional.get();
         if (ObjectUtil.notEqual(friendReq.getRecUserId(), userId)) {
-            return RespUtil.error(RespCodeConstant.ACCESS_FORBID, "权限不足！");
+            return RespUtil.error(RespCode.FORBIDDEN);
         }
 
         friendReqRepository.delete(friendReq);

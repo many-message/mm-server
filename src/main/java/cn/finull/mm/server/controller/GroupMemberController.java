@@ -4,7 +4,7 @@ import cn.finull.mm.server.common.constant.RequestConstant;
 import cn.finull.mm.server.common.enums.GroupMemberTypeEnum;
 import cn.finull.mm.server.service.GroupMemberService;
 import cn.finull.mm.server.vo.GroupMemberVO;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.RespVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

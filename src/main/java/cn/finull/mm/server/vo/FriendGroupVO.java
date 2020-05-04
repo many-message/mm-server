@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * Description
  * <p>
@@ -16,6 +18,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FriendGroupVO {
+
+    /**
+     * 分组ID
+     */
     private Long friendGroupId;
+
+    /**
+     * 分组名
+     */
     private String friendGroupName;
+
+    /**
+     * 好友列表
+     */
+    private List<FriendVO> friends;
 }

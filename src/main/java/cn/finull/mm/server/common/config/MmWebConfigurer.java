@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -37,6 +38,10 @@ public class MmWebConfigurer implements WebMvcConfigurer {
                 .addResourceLocations(mmConfig.getFileUploadFolder());
     }
 
+    /**
+     * 拦截器配置
+     * @param registry
+     */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new UserLoginInterceptor())
@@ -45,6 +50,15 @@ public class MmWebConfigurer implements WebMvcConfigurer {
         registry.addInterceptor(new AdminLoginInterceptor())
                 .addPathPatterns("/admin/api/**")
                 .excludePathPatterns("/admin/login");
+    }
+
+    /**
+     * 枚举转换
+     * @param registry
+     */
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverterFactory(new EnumConverterFactory());
     }
 
     /**

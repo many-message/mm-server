@@ -27,14 +27,16 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> 
 
     List<GroupMember> findAllByGroupIdOrderByGroupMemberType(Long groupId);
 
-    List<GroupMember> findAllByUserId(Long userId);
+    List<GroupMember> findByUserIdAndGroupMemberType(Long userId, GroupMemberTypeEnum groupMemberType);
+
+    List<GroupMember> findByUserIdAndGroupMemberTypeNot(Long userId, GroupMemberTypeEnum groupMemberType);
 
     boolean existsByGroupIdAndUserId(Long groupId, Long userId);
 
     List<GroupMember> findAllByGroupIdAndGroupMemberTypeNot(Long groupId, GroupMemberTypeEnum groupMemberType);
 
-    List<GroupMember> findAllByUserIdAndGroupMemberTypeNot(Long userId, GroupMemberTypeEnum groupMemberType);
-
     @Transactional
     void deleteByGroupIdAndUserId(Long groupId, Long userId);
+
+    int countByUserIdAndGroupMemberType(Long userId, GroupMemberTypeEnum groupMemberType);
 }

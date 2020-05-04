@@ -2,7 +2,7 @@ package cn.finull.mm.server.service;
 
 import cn.finull.mm.server.common.enums.GroupMemberTypeEnum;
 import cn.finull.mm.server.vo.GroupMemberVO;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.RespVO;
 
 import java.util.List;
 

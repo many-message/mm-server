@@ -1,7 +1,7 @@
 package cn.finull.mm.server.service.impl;
 
 import cn.finull.mm.server.common.constant.Constant;
-import cn.finull.mm.server.common.constant.RespCodeConstant;
+import cn.finull.mm.server.common.constant.RespCode;
 import cn.finull.mm.server.common.enums.GroupMemberTypeEnum;
 import cn.finull.mm.server.common.enums.GroupStatusEnum;
 import cn.finull.mm.server.dao.GroupMemberRepository;
@@ -10,11 +10,12 @@ import cn.finull.mm.server.entity.Group;
 import cn.finull.mm.server.entity.GroupMember;
 import cn.finull.mm.server.param.GroupAddParam;
 import cn.finull.mm.server.param.GroupUpdateParam;
+import cn.finull.mm.server.param.enums.GroupQueryTypeEnum;
 import cn.finull.mm.server.service.GroupService;
-import cn.finull.mm.server.util.RespUtil;
+import cn.finull.mm.server.common.util.RespUtil;
 import cn.finull.mm.server.vo.GroupVO;
-import cn.finull.mm.server.vo.resp.PageVO;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.PageVO;
+import cn.finull.mm.server.common.vo.RespVO;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.RandomUtil;
@@ -44,18 +45,28 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GroupServiceImpl implements GroupService {
 
+    /**
+     * 最大建群数量
+     */
+    private static final Integer MAX_ADD_GROUP_NUM = 3;
+
     private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
 
     @Override
-    public RespVO<GroupVO> addGroup(GroupAddParam groupAddParam, Long userId) {
+    public RespVO<List<GroupVO>> addGroup(GroupAddParam groupAddParam, Long userId) {
+        if (groupMemberRepository.countByUserIdAndGroupMemberType(userId, GroupMemberTypeEnum.OWNER)
+                >= MAX_ADD_GROUP_NUM) {
+            return RespUtil.error(RespCode.FORBIDDEN, "您已达到创建群聊数量上限！");
+        }
+
         Group group = new Group(groupAddParam.getGroupName(), groupAddParam.getGroupDesc(), buildGroupNum());
         groupRepository.save(group);
 
         GroupMember groupMember = new GroupMember(group.getGroupId(), userId, GroupMemberTypeEnum.OWNER);
         groupMemberRepository.save(groupMember);
 
-        return RespUtil.OK(buildGroupVO(group));
+        return getGroups(GroupQueryTypeEnum.MY_GROUP, userId);
     }
 
     private String buildGroupNum() {
@@ -69,7 +80,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public RespVO<GroupVO> updateGroup(GroupUpdateParam groupUpdateParam, Long userId) {
         if (!groupMemberRepository.existsByGroupIdAndUserIdAndGroupMemberTypeNot(groupUpdateParam.getGroupId(), userId, GroupMemberTypeEnum.ORDINARY)) {
-            return RespUtil.error(RespCodeConstant.ACCESS_FORBID, "权限不足！");
+            return RespUtil.error(RespCode.FORBIDDEN);
         }
 
         Group group = groupRepository.getOne(groupUpdateParam.getGroupId());
@@ -81,11 +92,21 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public RespVO<List<GroupVO>> getGroups(Long userId) {
-        List<Long> groupIds = groupMemberRepository.findAllByUserId(userId)
-                .stream()
-                .map(GroupMember::getGroupId)
-                .collect(Collectors.toList());
+    public RespVO<List<GroupVO>> getGroups(GroupQueryTypeEnum type, Long userId) {
+        List<Long> groupIds;
+
+        if (GroupQueryTypeEnum.MY_GROUP == type) {
+            groupIds = groupMemberRepository.findByUserIdAndGroupMemberType(userId, GroupMemberTypeEnum.OWNER)
+                    .stream()
+                    .map(GroupMember::getGroupId)
+                    .collect(Collectors.toList());
+        } else {
+            groupIds = groupMemberRepository.findByUserIdAndGroupMemberTypeNot(userId, GroupMemberTypeEnum.OWNER)
+                    .stream()
+                    .map(GroupMember::getGroupId)
+                    .collect(Collectors.toList());
+        }
+
         if (CollUtil.isEmpty(groupIds)) {
             return RespUtil.OK(List.of());
         }
@@ -94,6 +115,7 @@ public class GroupServiceImpl implements GroupService {
                 .stream()
                 .map(this::buildGroupVO)
                 .collect(Collectors.toList());
+
         return RespUtil.OK(groups);
     }
 
@@ -118,7 +140,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public RespVO deleteGroup(Long groupId, Long userId) {
         if (!groupMemberRepository.existsByGroupIdAndUserIdAndGroupMemberType(groupId, userId, GroupMemberTypeEnum.OWNER)) {
-            return RespUtil.error(RespCodeConstant.ACCESS_FORBID, "权限不足！");
+            return RespUtil.error(RespCode.FORBIDDEN);
         }
 
         groupRepository.deleteById(groupId);
@@ -148,7 +170,7 @@ public class GroupServiceImpl implements GroupService {
     public RespVO<GroupVO> updateGroupStatus(Long groupId, GroupStatusEnum groupStatus) {
         Optional<Group> groupOptional = groupRepository.findById(groupId);
         if (groupOptional.isEmpty()) {
-            return RespUtil.error(RespCodeConstant.NOT_FOUND, "群不存在！");
+            return RespUtil.error(RespCode.NOT_FOUND, "群不存在！");
         }
 
         Group group = groupOptional.get();

@@ -2,7 +2,7 @@ package cn.finull.mm.server.service;
 
 import cn.finull.mm.server.param.FriendGroupUpdateParam;
 import cn.finull.mm.server.vo.FriendGroupVO;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.RespVO;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public interface FriendGroupService {
      * @param userId
      * @return
      */
-    RespVO<FriendGroupVO> updateFriendGroup(FriendGroupUpdateParam friendGroupUpdateParam, Long userId);
+    RespVO<List<FriendGroupVO>> updateFriendGroup(FriendGroupUpdateParam friendGroupUpdateParam, Long userId);
 
     /**
      * 添加好友分组
@@ -37,7 +37,7 @@ public interface FriendGroupService {
      * @param userId
      * @return
      */
-    RespVO<FriendGroupVO> addFriendGroup(String friendGroupName, Long userId);
+    RespVO<List<FriendGroupVO>> addFriendGroup(String friendGroupName, Long userId);
 
     /**
      * 删除好友分组
@@ -45,5 +45,5 @@ public interface FriendGroupService {
      * @param userId
      * @return
      */
-    RespVO deleteFriendGroup(Long friendGroupId, Long userId);
+    RespVO<List<FriendGroupVO>> deleteFriendGroup(Long friendGroupId, Long userId);
 }

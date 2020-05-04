@@ -3,7 +3,7 @@ package cn.finull.mm.server.service;
 import cn.finull.mm.server.common.enums.FriendReqStatusEnum;
 import cn.finull.mm.server.param.privates.FriendReqAddPrivateParam;
 import cn.finull.mm.server.vo.FriendReqVO;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.RespVO;
 
 import java.util.List;
 

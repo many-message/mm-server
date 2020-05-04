@@ -2,7 +2,7 @@ package cn.finull.mm.server.service;
 
 import cn.finull.mm.server.param.privates.MsgAddPrivateParam;
 import cn.finull.mm.server.vo.UserMsgVO;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.RespVO;
 
 import java.util.List;
 

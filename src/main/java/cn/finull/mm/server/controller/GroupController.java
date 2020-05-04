@@ -3,9 +3,10 @@ package cn.finull.mm.server.controller;
 import cn.finull.mm.server.common.constant.RequestConstant;
 import cn.finull.mm.server.param.GroupAddParam;
 import cn.finull.mm.server.param.GroupUpdateParam;
+import cn.finull.mm.server.param.enums.GroupQueryTypeEnum;
 import cn.finull.mm.server.service.GroupService;
 import cn.finull.mm.server.vo.GroupVO;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.RespVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -31,10 +32,10 @@ public class GroupController {
     /**
      * 新建一个群
      * @param groupAddParam
-     * @return
+     * @return 我的群聊
      */
     @PostMapping("/groups")
-    public RespVO<GroupVO> addGroup(@Validated @RequestBody GroupAddParam groupAddParam,
+    public RespVO<List<GroupVO>> addGroup(@Validated @RequestBody GroupAddParam groupAddParam,
                                     @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return groupService.addGroup(groupAddParam, userId);
     }
@@ -52,12 +53,14 @@ public class GroupController {
 
     /**
      * 获取自己的所有群
-     * @param userId
+     * @param type 1-我的群聊；2-我加入的群聊
+     * @param userId 当前登录用户ID
      * @return
      */
     @GetMapping("/groups")
-    public RespVO<List<GroupVO>> getGroups(@RequestAttribute(RequestConstant.USER_ID) Long userId) {
-        return groupService.getGroups(userId);
+    public RespVO<List<GroupVO>> getGroups(@RequestParam GroupQueryTypeEnum type,
+                                           @RequestAttribute(RequestConstant.USER_ID) Long userId) {
+        return groupService.getGroups(type, userId);
     }
 
     /**

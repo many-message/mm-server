@@ -1,8 +1,9 @@
 package cn.finull.mm.server.service;
 
+import cn.finull.mm.server.vo.FriendGroupVO;
 import cn.finull.mm.server.vo.FriendVO;
 import cn.finull.mm.server.vo.privates.FriendDelPrivateVO;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.RespVO;
 
 import java.util.List;
 
@@ -19,10 +20,16 @@ public interface FriendService {
     /**
      * 获取好友信息
      * @param friendGroupId
-     * @param userId
      * @return
      */
-    RespVO<List<FriendVO>> getFriends(Long friendGroupId, Long userId);
+    List<FriendVO> getFriends(Long friendGroupId);
+
+    /**
+     * 查询好友详情
+     * @param friendId 好友ID
+     * @return
+     */
+    RespVO<FriendVO> getFriend(Long friendId);
 
     /**
      * 修改好友备注
@@ -31,7 +38,7 @@ public interface FriendService {
      * @param userId
      * @return
      */
-    RespVO<FriendVO> updateFriendName(Long friendId, String friendName, Long userId);
+    RespVO<List<FriendGroupVO>> updateFriendName(Long friendId, String friendName, Long userId);
 
     /**
      * 修改好友分组
@@ -40,7 +47,7 @@ public interface FriendService {
      * @param userId
      * @return
      */
-    RespVO updateFriendGroup(Long friendId, Long friendGroupId, Long userId);
+    RespVO<List<FriendGroupVO>> updateFriendGroup(Long friendId, Long friendGroupId, Long userId);
 
     /**
      * 删除好友

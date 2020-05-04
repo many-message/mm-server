@@ -1,4 +1,4 @@
-package cn.finull.mm.server.vo.resp;
+package cn.finull.mm.server.common.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

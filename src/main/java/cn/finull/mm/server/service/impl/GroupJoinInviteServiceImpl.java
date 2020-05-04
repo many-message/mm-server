@@ -1,6 +1,6 @@
 package cn.finull.mm.server.service.impl;
 
-import cn.finull.mm.server.common.constant.RespCodeConstant;
+import cn.finull.mm.server.common.constant.RespCode;
 import cn.finull.mm.server.common.enums.GroupJoinInviteStatusEnum;
 import cn.finull.mm.server.common.enums.GroupMemberTypeEnum;
 import cn.finull.mm.server.dao.GroupJoinInviteRepository;
@@ -13,11 +13,11 @@ import cn.finull.mm.server.entity.GroupMember;
 import cn.finull.mm.server.entity.User;
 import cn.finull.mm.server.param.privates.GroupJoinInviteAddPrivateParam;
 import cn.finull.mm.server.service.GroupJoinInviteService;
-import cn.finull.mm.server.util.RespUtil;
+import cn.finull.mm.server.common.util.RespUtil;
 import cn.finull.mm.server.vo.GroupJoinInviteVO;
 import cn.finull.mm.server.vo.GroupVO;
 import cn.finull.mm.server.vo.UserVO;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.RespVO;
 import cn.hutool.core.bean.BeanUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,14 +48,14 @@ public class GroupJoinInviteServiceImpl implements GroupJoinInviteService {
     @Override
     public RespVO<GroupJoinInviteVO> inviteJoinGroup(GroupJoinInviteAddPrivateParam groupJoinInviteAddPrivateParam) {
         if (groupMemberRepository.existsByGroupIdAndUserId(groupJoinInviteAddPrivateParam.getGroupId(), groupJoinInviteAddPrivateParam.getInviteUserId())) {
-            return RespUtil.error(RespCodeConstant.ACCESS_FORBID, "已在群中！");
+            return RespUtil.error(RespCode.FORBIDDEN, "已在群中！");
         }
 
         Optional<Group> groupOptional = groupRepository.findById(groupJoinInviteAddPrivateParam.getGroupId());
         Optional<User> reqUserOptional = userRepository.findById(groupJoinInviteAddPrivateParam.getReqUserId());
         Optional<User> inviteUserOptional = userRepository.findById(groupJoinInviteAddPrivateParam.getInviteUserId());
         if (groupOptional.isEmpty() || reqUserOptional.isEmpty() || inviteUserOptional.isEmpty()) {
-            return RespUtil.error(RespCodeConstant.NOT_FOUND, RespCodeConstant.NOT_FOUND_MSG);
+            return RespUtil.error(RespCode.NOT_FOUND);
         }
 
         Group group = groupOptional.get();
@@ -72,7 +72,7 @@ public class GroupJoinInviteServiceImpl implements GroupJoinInviteService {
     public RespVO<GroupJoinInviteVO> updateGroupInviteStatus(Long groupJoinInviteId, GroupJoinInviteStatusEnum groupJoinInviteStatus) {
         Optional<GroupJoinInvite> groupJoinInviteOptional = groupJoinInviteRepository.findById(groupJoinInviteId);
         if (groupJoinInviteOptional.isEmpty()) {
-            return RespUtil.error(RespCodeConstant.NOT_FOUND, RespCodeConstant.NOT_FOUND_MSG);
+            return RespUtil.error(RespCode.NOT_FOUND);
         }
 
         GroupJoinInvite groupJoinInvite = groupJoinInviteOptional.get();
@@ -129,7 +129,7 @@ public class GroupJoinInviteServiceImpl implements GroupJoinInviteService {
     @Override
     public RespVO deleteGroupJoinInvite(Long groupJoinInviteId, Long userId) {
         if (!groupJoinInviteRepository.existsByGroupJoinInviteIdAndInviteUserId(groupJoinInviteId, userId)) {
-            return RespUtil.error(RespCodeConstant.ACCESS_FORBID, "权限不足！");
+            return RespUtil.error(RespCode.FORBIDDEN);
         }
         groupJoinInviteRepository.deleteById(groupJoinInviteId);
         return RespUtil.OK();

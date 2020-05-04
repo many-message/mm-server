@@ -16,7 +16,11 @@ import java.util.Optional;
  */
 public interface FriendGroupRepository extends JpaRepository<FriendGroup, Long> {
 
-    List<FriendGroup> findAllByUserIdOrderByFriendGroupName(Long userId);
+    List<FriendGroup> findAllByUserIdOrderByCreateTimeAsc(Long userId);
 
     Optional<FriendGroup> findByFriendGroupIdAndUserId(Long friendGroupId, Long userId);
+
+    boolean existsByUserIdAndFriendGroupName(Long userId, String friendGroupName);
+
+    int countByUserId(Long userId);
 }

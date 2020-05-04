@@ -8,8 +8,8 @@ import cn.finull.mm.server.param.UserUpdatePwdParam;
 import cn.finull.mm.server.vo.UserLoginVO;
 import cn.finull.mm.server.vo.UserVO;
 import cn.finull.mm.server.vo.admin.UserAdminVO;
-import cn.finull.mm.server.vo.resp.PageVO;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.PageVO;
+import cn.finull.mm.server.common.vo.RespVO;
 
 import java.util.List;
 

@@ -2,8 +2,9 @@ package cn.finull.mm.server.controller;
 
 import cn.finull.mm.server.common.constant.RequestConstant;
 import cn.finull.mm.server.service.FriendService;
+import cn.finull.mm.server.vo.FriendGroupVO;
+import cn.finull.mm.server.common.vo.RespVO;
 import cn.finull.mm.server.vo.FriendVO;
-import cn.finull.mm.server.vo.resp.RespVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,15 +27,13 @@ public class FriendController {
     private final FriendService friendService;
 
     /**
-     * 获取好友
-     * @param friendGroupId
-     * @param userId
+     * 查询好友详情
+     * @param friendId 好友ID
      * @return
      */
-    @GetMapping("/friends")
-    public RespVO<List<FriendVO>> getFriends(@RequestParam(required = false) Long friendGroupId,
-                                             @RequestAttribute(RequestConstant.USER_ID) Long userId) {
-        return friendService.getFriends(friendGroupId, userId);
+    @GetMapping("/friends/{friendId}")
+    public RespVO<FriendVO> getFriend(@PathVariable("friendId") Long friendId) {
+        return friendService.getFriend(friendId);
     }
 
     /**
@@ -45,9 +44,9 @@ public class FriendController {
      * @return
      */
     @PatchMapping("/friends/{friendId}/groups/{friendGroupId}")
-    public RespVO updateFriendGroup(@PathVariable("friendId") Long friendId,
-                                              @PathVariable("friendGroupId") Long friendGroupId,
-                                              @RequestAttribute(RequestConstant.USER_ID) Long userId) {
+    public RespVO<List<FriendGroupVO>> updateFriendGroup(@PathVariable("friendId") Long friendId,
+                                                         @PathVariable("friendGroupId") Long friendGroupId,
+                                                         @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return friendService.updateFriendGroup(friendId, friendGroupId, userId);
     }
 
@@ -59,7 +58,7 @@ public class FriendController {
      * @return
      */
     @PatchMapping("/friends/{friendId}")
-    public RespVO<FriendVO> updateFriendName(@PathVariable("friendId") Long friendId,
+    public RespVO<List<FriendGroupVO>> updateFriendName(@PathVariable("friendId") Long friendId,
                                              @RequestParam String friendName,
                                              @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return friendService.updateFriendName(friendId, friendName, userId);

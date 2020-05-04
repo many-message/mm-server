@@ -19,4 +19,9 @@ public class Constant {
 
     public static final String USER_CACHE_PREFIX = "user_";
     public static final String ADMIN_CACHE_PREFIX = "admin_";
+
+    /**
+     * 默认好友分组
+     */
+    public static final String FRIEND_GROUP_NAME = "我的好友";
 }

@@ -4,7 +4,7 @@ import cn.finull.mm.server.common.enums.FriendReqStatusEnum;
 import cn.finull.mm.server.param.privates.FriendReqAddPrivateParam;
 import cn.finull.mm.server.service.FriendReqService;
 import cn.finull.mm.server.vo.FriendReqVO;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.RespVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;

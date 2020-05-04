@@ -1,7 +1,7 @@
 package cn.finull.mm.server.service.impl;
 
 import cn.finull.mm.server.common.constant.Constant;
-import cn.finull.mm.server.common.constant.RespCodeConstant;
+import cn.finull.mm.server.common.constant.RespCode;
 import cn.finull.mm.server.dao.AdminRepository;
 import cn.finull.mm.server.entity.Admin;
 import cn.finull.mm.server.param.admin.AdminLoginParam;
@@ -9,15 +9,15 @@ import cn.finull.mm.server.param.admin.AdminUpdatePwdParam;
 import cn.finull.mm.server.service.AdminService;
 import cn.finull.mm.server.service.SecureService;
 import cn.finull.mm.server.util.CacheUtil;
-import cn.finull.mm.server.util.RespUtil;
+import cn.finull.mm.server.common.util.RespUtil;
 import cn.finull.mm.server.vo.admin.AdminLoginVO;
-import cn.finull.mm.server.vo.resp.RespVO;
-import cn.hutool.core.date.DateTime;
+import cn.finull.mm.server.common.vo.RespVO;
 import cn.hutool.core.util.IdUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -39,7 +39,7 @@ public class AdminServiceImpl implements AdminService {
     public RespVO<AdminLoginVO> login(AdminLoginParam adminLoginParam) {
         Optional<Admin> adminOptional = adminRepository.findByUsername(adminLoginParam.getUsername());
         if (adminOptional.isEmpty()) {
-            return RespUtil.error(RespCodeConstant.PARAM_INVALID, "用户名错误！");
+            return RespUtil.error(RespCode.BAD_REQUEST, "用户名错误！");
         }
 
         String pwd = secureService.rsaPrivateKeyDecrypt(adminLoginParam.getPwd());
@@ -50,14 +50,14 @@ public class AdminServiceImpl implements AdminService {
             return RespUtil.OK(new AdminLoginVO(token, admin.getUsername()));
         }
 
-        return RespUtil.error(RespCodeConstant.PARAM_INVALID, "密码错误！");
+        return RespUtil.error(RespCode.BAD_REQUEST, "密码错误！");
     }
 
     @Override
     public RespVO updatePwd(AdminUpdatePwdParam adminUpdatePwdParam, Long adminId) {
         Optional<Admin> adminOptional = adminRepository.findById(adminId);
         if (adminOptional.isEmpty()) {
-            return RespUtil.error(RespCodeConstant.NOT_FOUND, "用户不存在！");
+            return RespUtil.error(RespCode.NOT_FOUND, "用户不存在！");
         }
 
         String oldPwd = secureService.rsaPrivateKeyDecrypt(adminUpdatePwdParam.getOldPwd());
@@ -65,13 +65,13 @@ public class AdminServiceImpl implements AdminService {
 
         Admin admin = adminOptional.get();
         if (!secureService.checkByBCrypt(oldPwd, admin.getPwd())) {
-            return RespUtil.error(RespCodeConstant.PARAM_INVALID, "原始密码错误！");
+            return RespUtil.error(RespCode.BAD_REQUEST, "原始密码错误！");
         }
         if (!secureService.checkPwd(newPwd)) {
-            return RespUtil.error(RespCodeConstant.PARAM_INVALID, "密码长度必须在6~20位！");
+            return RespUtil.error(RespCode.BAD_REQUEST, "密码长度必须在6~20位！");
         }
         admin.setPwd(secureService.hashByBCrypt(newPwd));
-        admin.setUpdateTime(new DateTime());
+        admin.setUpdateTime(new Date());
 
         adminRepository.save(admin);
 

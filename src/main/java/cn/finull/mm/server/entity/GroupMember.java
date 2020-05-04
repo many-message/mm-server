@@ -35,7 +35,7 @@ public class GroupMember {
     private Long userId;
 
     @Convert(converter = GroupMemberTypeEnum.GroupMemberTypeEnumConverter.class)
-    @Column(name = "group_user_type", nullable = false)
+    @Column(name = "group_member_type", nullable = false)
     private GroupMemberTypeEnum groupMemberType;
 
     @Column(name = "group_member_name", nullable = false)

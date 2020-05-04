@@ -2,9 +2,11 @@ package cn.finull.mm.server.service.impl;
 
 import cn.finull.mm.server.common.config.MmConfig;
 import cn.finull.mm.server.common.constant.Constant;
-import cn.finull.mm.server.common.constant.RespCodeConstant;
+import cn.finull.mm.server.common.constant.RespCode;
 import cn.finull.mm.server.common.enums.UserStatusEnum;
+import cn.finull.mm.server.dao.FriendGroupRepository;
 import cn.finull.mm.server.dao.UserRepository;
+import cn.finull.mm.server.entity.FriendGroup;
 import cn.finull.mm.server.entity.User;
 import cn.finull.mm.server.param.UserLoginParam;
 import cn.finull.mm.server.param.UserRegisterParam;
@@ -13,12 +15,12 @@ import cn.finull.mm.server.param.UserUpdatePwdParam;
 import cn.finull.mm.server.service.SecureService;
 import cn.finull.mm.server.service.UserService;
 import cn.finull.mm.server.util.CacheUtil;
-import cn.finull.mm.server.util.RespUtil;
+import cn.finull.mm.server.common.util.RespUtil;
 import cn.finull.mm.server.vo.UserLoginVO;
 import cn.finull.mm.server.vo.UserVO;
 import cn.finull.mm.server.vo.admin.UserAdminVO;
-import cn.finull.mm.server.vo.resp.PageVO;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.PageVO;
+import cn.finull.mm.server.common.vo.RespVO;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
@@ -28,6 +30,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -57,26 +60,29 @@ public class UserServiceImpl implements UserService {
 
     private final MmConfig mmConfig;
     private final UserRepository userRepository;
+    private final FriendGroupRepository friendGroupRepository;
+
     private final SecureService secureService;
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public RespVO register(UserRegisterParam userRegisterParam) {
         // 验证邮箱是否被注册
         Optional<User> userOptional = userRepository.findByEmail(userRegisterParam.getEmail());
         if (userOptional.isPresent()) {
-            return RespUtil.error(RespCodeConstant.PARAM_INVALID, "邮箱已被注册！");
+            return RespUtil.error(RespCode.BAD_REQUEST, "邮箱已被注册！");
         }
 
         // 校验验证码
         String code = CacheUtil.getCodeByEmail(userRegisterParam.getEmail());
         if (!StrUtil.equals(code, userRegisterParam.getCode())) {
-            return RespUtil.error(RespCodeConstant.PARAM_INVALID, "验证码错误！");
+            return RespUtil.error(RespCode.BAD_REQUEST, "验证码错误！");
         }
 
         // 校验密码规范
         String pwd = secureService.rsaPrivateKeyDecrypt(userRegisterParam.getPwd());
         if (!secureService.checkPwd(pwd)) {
-            return RespUtil.error(RespCodeConstant.PARAM_INVALID, "密码长度必须在6~20位！");
+            return RespUtil.error(RespCode.BAD_REQUEST, "密码长度必须在6~20位！");
         }
 
         // 保存用户信息
@@ -89,7 +95,17 @@ public class UserServiceImpl implements UserService {
         user.setUpdateTime(new Date());
         userRepository.save(user);
 
+        // 为用户创建一个默认好友分组
+        saveDefaultFriendGroup(user.getUserId());
+
         return RespUtil.OK();
+    }
+
+    private void saveDefaultFriendGroup(Long userId) {
+        FriendGroup friendGroup = new FriendGroup();
+        friendGroup.setUserId(userId);
+        friendGroup.setFriendGroupName(Constant.FRIEND_GROUP_NAME);
+        friendGroupRepository.save(friendGroup);
     }
 
     @Override
@@ -97,19 +113,19 @@ public class UserServiceImpl implements UserService {
         // 验证邮箱
         Optional<User> userOptional = userRepository.findByEmail(userLoginParam.getEmail());
         if (userOptional.isEmpty()) {
-            return RespUtil.error(RespCodeConstant.PARAM_INVALID, "邮箱错误！");
+            return RespUtil.error(RespCode.BAD_REQUEST, "邮箱错误！");
         }
 
         // 判断用户是否被锁定
         User user = userOptional.get();
         if (user.getUserStatus() == UserStatusEnum.AUTO_LOCK) {
-            return RespUtil.error(RespCodeConstant.ACCESS_FORBID, "密码错误次数过多，已被永久锁定，请联系管理员！");
+            return RespUtil.error(RespCode.FORBIDDEN, "密码错误次数过多，已被永久锁定，请联系管理员！");
         }
         if (user.getUserStatus() == UserStatusEnum.ADMIN_LOCK) {
-            return RespUtil.error(RespCodeConstant.ACCESS_FORBID, "你已被管理员锁定，暂时不能登录系统！");
+            return RespUtil.error(RespCode.FORBIDDEN, "你已被管理员锁定，暂时不能登录系统！");
         }
         if (user.getPwdErrCount() >= PWD_TMP_LOCK_COUNT) {
-            return RespUtil.error(RespCodeConstant.ACCESS_FORBID, "密码错误次数过多，已被临时锁定，请隔天再试！");
+            return RespUtil.error(RespCode.FORBIDDEN, "密码错误次数过多，已被临时锁定，请隔天再试！");
         }
 
         // 校验用户密码
@@ -120,7 +136,7 @@ public class UserServiceImpl implements UserService {
                 user.setUserStatus(UserStatusEnum.AUTO_LOCK);
                 userRepository.save(user);
             }
-            return RespUtil.error(RespCodeConstant.PARAM_INVALID, "密码错误！");
+            return RespUtil.error(RespCode.FORBIDDEN, "密码错误！");
         }
 
         // 清除密码错误次数
@@ -141,7 +157,7 @@ public class UserServiceImpl implements UserService {
     public RespVO<UserVO> updateUserInfo(UserUpdateParam userUpdateParam, Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
-            return RespUtil.error(RespCodeConstant.NOT_FOUND, "用户不存在！");
+            return RespUtil.error(RespCode.NOT_FOUND, "用户不存在！");
         }
 
         User user = userOptional.get();
@@ -159,7 +175,7 @@ public class UserServiceImpl implements UserService {
     public RespVO updatePwd(UserUpdatePwdParam userUpdatePwdParam, Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
-            return RespUtil.error(RespCodeConstant.NOT_FOUND, "用户不存在！");
+            return RespUtil.error(RespCode.NOT_FOUND, "用户不存在！");
         }
 
         String oldPwd = secureService.rsaPrivateKeyDecrypt(userUpdatePwdParam.getOldPwd());
@@ -167,10 +183,10 @@ public class UserServiceImpl implements UserService {
 
         User user = userOptional.get();
         if (!secureService.checkByBCrypt(oldPwd, user.getPwd())) {
-            return RespUtil.error(RespCodeConstant.PARAM_INVALID, "原始密码错误！");
+            return RespUtil.error(RespCode.BAD_REQUEST, "原始密码错误！");
         }
         if (!secureService.checkPwd(newPwd)) {
-            return RespUtil.error(RespCodeConstant.PARAM_INVALID, "密码长度必须在6~20位！");
+            return RespUtil.error(RespCode.BAD_REQUEST, "密码长度必须在6~20位！");
         }
         user.setPwd(secureService.hashByBCrypt(newPwd));
         user.setUpdateTime(new Date());
@@ -216,7 +232,7 @@ public class UserServiceImpl implements UserService {
     public RespVO<UserAdminVO> updateUserStatus(Long userId, UserStatusEnum userStatus) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
-            return RespUtil.error(RespCodeConstant.NOT_FOUND, "用户不存在！");
+            return RespUtil.error(RespCode.NOT_FOUND, "用户不存在！");
         }
 
         User user = userOptional.get();
@@ -237,7 +253,7 @@ public class UserServiceImpl implements UserService {
     public RespVO resetUserPwd(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
-            return RespUtil.error(RespCodeConstant.NOT_FOUND, "用户不存在！");
+            return RespUtil.error(RespCode.NOT_FOUND, "用户不存在！");
         }
 
         User user = userOptional.get();

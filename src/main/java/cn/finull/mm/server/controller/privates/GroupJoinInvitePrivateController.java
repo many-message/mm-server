@@ -4,7 +4,7 @@ import cn.finull.mm.server.common.enums.GroupJoinInviteStatusEnum;
 import cn.finull.mm.server.param.privates.GroupJoinInviteAddPrivateParam;
 import cn.finull.mm.server.service.GroupJoinInviteService;
 import cn.finull.mm.server.vo.GroupJoinInviteVO;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.RespVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;

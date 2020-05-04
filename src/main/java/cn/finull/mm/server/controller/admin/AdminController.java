@@ -5,7 +5,7 @@ import cn.finull.mm.server.param.admin.AdminLoginParam;
 import cn.finull.mm.server.param.admin.AdminUpdatePwdParam;
 import cn.finull.mm.server.service.AdminService;
 import cn.finull.mm.server.vo.admin.AdminLoginVO;
-import cn.finull.mm.server.vo.resp.RespVO;
+import cn.finull.mm.server.common.vo.RespVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
