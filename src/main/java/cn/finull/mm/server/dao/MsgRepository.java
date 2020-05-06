@@ -16,8 +16,6 @@ import java.util.List;
  */
 public interface MsgRepository extends JpaRepository<Msg, Long> {
 
-    List<Msg> findAllByRecvUserId(Long recvUserId);
-
     List<Msg> findAllBySendUserIdAndRecvUserIdOrderByCreateTime(Long sendUserId, Long recvUserId);
 
     @Transactional

@@ -2,7 +2,6 @@ package cn.finull.mm.server.service;
 
 import cn.finull.mm.server.vo.FriendGroupVO;
 import cn.finull.mm.server.vo.FriendVO;
-import cn.finull.mm.server.vo.privates.FriendDelPrivateVO;
 import cn.finull.mm.server.common.vo.RespVO;
 
 import java.util.List;
@@ -55,5 +54,5 @@ public interface FriendService {
      * @param userId
      * @return 被删除用户的id
      */
-    RespVO<FriendDelPrivateVO> deleteFriend(Long friendId, Long userId);
+    RespVO<List<FriendGroupVO>> deleteFriend(Long friendId, Long userId);
 }

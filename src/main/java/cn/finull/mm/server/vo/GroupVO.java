@@ -27,4 +27,9 @@ public class GroupVO {
      * 群成员人数
      */
     private Long groupMemberNum;
+
+    /**
+     * 是否已加入
+     */
+    private Boolean join;
 }

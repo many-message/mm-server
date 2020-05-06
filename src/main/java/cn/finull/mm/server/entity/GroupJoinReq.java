@@ -1,6 +1,5 @@
 package cn.finull.mm.server.entity;
 
-import cn.finull.mm.server.common.enums.GroupJoinReqStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,21 +36,16 @@ public class GroupJoinReq {
     @Column(name = "req_msg", nullable = false)
     private String reqMsg;
 
-    @Convert(converter = GroupJoinReqStatusEnum.GroupJoinReqStatusEnumConverter.class)
-    @Column(name = "group_join_req_status", nullable = false)
-    private GroupJoinReqStatusEnum groupJoinReqStatus;
-
     @Column(name = "create_time", nullable = false)
     private Date createTime;
 
     @Column(name = "update_time", nullable = false)
     private Date updateTime;
 
-    public GroupJoinReq(Long reqUserId, Long groupId) {
+    public GroupJoinReq(Long reqUserId, Long groupId, String reqMsg) {
         this.reqUserId = reqUserId;
         this.groupId = groupId;
-        reqMsg = "";
-        groupJoinReqStatus = GroupJoinReqStatusEnum.REQ;
+        this.reqMsg = reqMsg;
         createTime = new Date();
         updateTime = new Date();
     }

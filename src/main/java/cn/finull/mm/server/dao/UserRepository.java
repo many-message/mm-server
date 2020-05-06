@@ -31,7 +31,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void updatePwdErrCountByUserStatus(@Param("pwdErrCount") Integer pwdErrCount,
                                        @Param("userStatus") UserStatusEnum userStatus);
 
-    List<User> findAllByEmailOrNicknameLike(String email, String nickname);
+    List<User> findByEmailLikeOrNicknameLike(String email, String nickname);
 
     Page<User> findAllByEmailOrNicknameLike(String email, String nickname, Pageable pageable);
 }

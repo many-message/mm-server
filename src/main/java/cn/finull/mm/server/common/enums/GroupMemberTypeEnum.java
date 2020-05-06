@@ -16,7 +16,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum GroupMemberTypeEnum implements BaseEnum<GroupMemberTypeEnum> {
     /**
-     *
+     * 1-群所有者；2-群管理员；3-普通成员
      */
     OWNER("1", "群所有者"),
     MANAGER("2", "群管理员"),
@@ -24,6 +24,11 @@ public enum GroupMemberTypeEnum implements BaseEnum<GroupMemberTypeEnum> {
 
     private String code;
     private String desc;
+
+    @Override
+    public String toString() {
+        return code;
+    }
 
     public static class GroupMemberTypeEnumConverter extends JpaEnumConverter<GroupMemberTypeEnum> {
         public GroupMemberTypeEnumConverter() {

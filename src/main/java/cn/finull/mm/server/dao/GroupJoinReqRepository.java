@@ -1,11 +1,9 @@
 package cn.finull.mm.server.dao;
 
-import cn.finull.mm.server.common.enums.GroupJoinReqStatusEnum;
 import cn.finull.mm.server.entity.GroupJoinReq;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Description
@@ -17,7 +15,9 @@ import java.util.Optional;
  */
 public interface GroupJoinReqRepository extends JpaRepository<GroupJoinReq, Long> {
 
-    Optional<GroupJoinReq> findByGroupIdAndReqUserIdAndAndGroupJoinReqStatus(Long groupId, Long reqUserId, GroupJoinReqStatusEnum groupJoinReqStatus);
+    void deleteByGroupId(Long groupId);
 
-    List<GroupJoinReq> findAllByGroupIdInAndGroupJoinReqStatus(List<Long> groupIds, GroupJoinReqStatusEnum groupJoinReqStatus);
+    boolean existsByReqUserIdAndGroupId(Long reqUser, Long groupId);
+
+    List<GroupJoinReq> findByGroupIdInOrderByCreateTimeDesc(List<Long> groupIds);
 }

@@ -3,6 +3,8 @@ package cn.finull.mm.server.controller;
 import cn.finull.mm.server.common.constant.RequestConstant;
 import cn.finull.mm.server.common.enums.GroupMemberTypeEnum;
 import cn.finull.mm.server.service.GroupMemberService;
+import cn.finull.mm.server.vo.GroupDetailVO;
+import cn.finull.mm.server.vo.GroupListVO;
 import cn.finull.mm.server.vo.GroupMemberVO;
 import cn.finull.mm.server.common.vo.RespVO;
 import lombok.RequiredArgsConstructor;
@@ -27,16 +29,6 @@ public class GroupMemberController {
     private final GroupMemberService groupMemberService;
 
     /**
-     * 获取所有群成员
-     * @param groupId
-     * @return
-     */
-    @GetMapping("/groups/{groupId}/members")
-    public RespVO<List<GroupMemberVO>> getGroupMembers(@PathVariable("groupId") Long groupId) {
-        return groupMemberService.getGroupMembers(groupId);
-    }
-
-    /**
      * 修改群成员类型
      * @param groupMemberId
      * @param groupMemberType
@@ -44,7 +36,7 @@ public class GroupMemberController {
      * @return
      */
     @PatchMapping("/group-members/{groupMemberId}/types")
-    public RespVO<GroupMemberVO> updateGroupMemberType(@PathVariable("groupMemberId") Long groupMemberId,
+    public RespVO<List<GroupMemberVO>> updateGroupMemberType(@PathVariable("groupMemberId") Long groupMemberId,
                                         @RequestParam GroupMemberTypeEnum groupMemberType,
                                         @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return groupMemberService.updateGroupMemberType(groupMemberId, groupMemberType, userId);
@@ -58,7 +50,7 @@ public class GroupMemberController {
      * @return
      */
     @PatchMapping("/group-members/{groupMemberId}/names")
-    public RespVO<GroupMemberVO> updateGroupMemberName(@PathVariable("groupMemberId") Long groupMemberId,
+    public RespVO<GroupDetailVO> updateGroupMemberName(@PathVariable("groupMemberId") Long groupMemberId,
                                                        @RequestParam String groupName,
                                                        @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return groupMemberService.updateGroupMemberName(groupMemberId, groupName, userId);
@@ -71,7 +63,7 @@ public class GroupMemberController {
      * @return
      */
     @DeleteMapping("/group-members/{groupMemberId}")
-    public RespVO deleteGroupMember(@PathVariable("groupMemberId") Long groupMemberId,
+    public RespVO<List<GroupMemberVO>> deleteGroupMember(@PathVariable("groupMemberId") Long groupMemberId,
                                     @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return groupMemberService.deleteGroupMember(groupMemberId, userId);
     }
@@ -83,8 +75,8 @@ public class GroupMemberController {
      * @return
      */
     @DeleteMapping("/groups/{groupId}/members")
-    public RespVO leaveGroup(@PathVariable("groupId") Long groupId,
-                             @RequestAttribute(RequestConstant.USER_ID) Long userId) {
+    public RespVO<GroupListVO> leaveGroup(@PathVariable("groupId") Long groupId,
+                                          @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return groupMemberService.leaveGroup(groupId, userId);
     }
 }

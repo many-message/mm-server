@@ -1,6 +1,5 @@
 package cn.finull.mm.server.vo;
 
-import cn.finull.mm.server.common.enums.GroupJoinInviteStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,11 +18,20 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GroupJoinInviteVO {
+
     private Long groupJoinInviteId;
-    private GroupVO group;
-    private UserVO reqUser;
-    private Long inviteUserId;
-    private GroupJoinInviteStatusEnum groupJoinInviteStatus;
+
+    private Long groupId;
+    private String groupName;
+    private String groupNum;
+    private String groupDesc;
+
+    private Long reqUserId;
+    private String nickname;
+    private String email;
+
+    private String inviteMsg;
+
     private Date createTime;
     private Date updateTime;
 }

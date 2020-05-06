@@ -63,4 +63,16 @@ public class FriendController {
                                              @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return friendService.updateFriendName(friendId, friendName, userId);
     }
+
+    /**
+     * 删除好友
+     * @param friendId
+     * @param userId
+     * @return
+     */
+    @DeleteMapping("/friends/{friendId}")
+    public RespVO<List<FriendGroupVO>> deleteFriend(@PathVariable("friendId") Long friendId,
+                                                    @RequestAttribute(RequestConstant.USER_ID) Long userId) {
+        return friendService.deleteFriend(friendId, userId);
+    }
 }

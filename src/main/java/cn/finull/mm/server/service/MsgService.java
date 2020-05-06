@@ -1,7 +1,7 @@
 package cn.finull.mm.server.service;
 
 import cn.finull.mm.server.param.privates.MsgAddPrivateParam;
-import cn.finull.mm.server.vo.UserMsgVO;
+import cn.finull.mm.server.vo.MsgVO;
 import cn.finull.mm.server.common.vo.RespVO;
 
 import java.util.List;
@@ -25,10 +25,11 @@ public interface MsgService {
 
     /**
      * 获取所有未签收的消息
-     * @param userId
+     * @param sendUserId
+     * @param recvUserId
      * @return
      */
-    RespVO<List<UserMsgVO>> getMessages(Long userId);
+    RespVO<List<MsgVO>> getMessages(Long sendUserId, Long recvUserId);
 
     /**
      * 签收消息

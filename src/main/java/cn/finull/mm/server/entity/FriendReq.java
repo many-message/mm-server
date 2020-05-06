@@ -1,6 +1,5 @@
 package cn.finull.mm.server.entity;
 
-import cn.finull.mm.server.common.enums.FriendReqStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,15 +30,14 @@ public class FriendReq {
     @Column(name = "req_user_id", nullable = false)
     private Long reqUserId;
 
-    @Column(name = "rec_user_id", nullable = false)
-    private Long recUserId;
+    @Column(name = "recv_user_id", nullable = false)
+    private Long recvUserId;
+
+    @Column(name = "friend_group_id", nullable = false)
+    private Long friendGroupId;
 
     @Column(name = "req_msg", nullable = false)
     private String reqMsg;
-
-    @Convert(converter = FriendReqStatusEnum.FriendReqStatusEnumConverter.class)
-    @Column(name = "friend_req_status", nullable = false)
-    private FriendReqStatusEnum friendReqStatus;
 
     @Column(name = "create_time", nullable = false)
     private Date createTime;
@@ -47,11 +45,11 @@ public class FriendReq {
     @Column(name = "update_time", nullable = false)
     private Date updateTime;
 
-    public FriendReq(Long reqUserId, Long recUserId) {
+    public FriendReq(Long reqUserId, Long recvUserId, Long friendGroupId, String reqMsg) {
         this.reqUserId = reqUserId;
-        this.recUserId = recUserId;
-        this.reqMsg = "";
-        friendReqStatus = FriendReqStatusEnum.REQ;
+        this.recvUserId = recvUserId;
+        this.friendGroupId = friendGroupId;
+        this.reqMsg = reqMsg;
         createTime = new Date();
         updateTime = new Date();
     }

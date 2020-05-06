@@ -1,11 +1,14 @@
 package cn.finull.mm.server.controller;
 
 import cn.finull.mm.server.common.constant.RequestConstant;
+import cn.finull.mm.server.param.FriendReqAddParam;
+import cn.finull.mm.server.param.FriendReqAgreeParam;
 import cn.finull.mm.server.service.FriendReqService;
 import cn.finull.mm.server.vo.FriendReqVO;
 import cn.finull.mm.server.common.vo.RespVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +29,30 @@ public class FriendReqController {
     private final FriendReqService friendReqService;
 
     /**
+     * 发送好友请求
+     * @param friendReqAddParam 好友请求参数
+     * @param userId 当前登录用户
+     * @return
+     */
+    @PostMapping("/friend-reqs")
+    public RespVO sendFriendReq(@Validated @RequestBody FriendReqAddParam friendReqAddParam,
+                                @RequestAttribute(RequestConstant.USER_ID) Long userId) {
+        return friendReqService.sendFriendReq(friendReqAddParam, userId);
+    }
+
+    /**
+     * 同意好友请求
+     * @param friendReqAgreeParam
+     * @param userId
+     * @return
+     */
+    @PatchMapping("/friend-reqs")
+    public RespVO<List<FriendReqVO>> agreeFriendReq(@Validated @RequestBody FriendReqAgreeParam friendReqAgreeParam,
+                                 @RequestAttribute(RequestConstant.USER_ID) Long userId) {
+        return friendReqService.agreeFriendReq(friendReqAgreeParam, userId);
+    }
+
+    /**
      * 获取所用好友请求
      * @param userId
      * @return
@@ -42,8 +69,8 @@ public class FriendReqController {
      * @return
      */
     @DeleteMapping("/friend-reqs/{friendReqId}")
-    public RespVO deleteFriendReq(@PathVariable("friendReqId") Long friendReqId,
-                                  @RequestAttribute(RequestConstant.USER_ID) Long userId) {
+    public RespVO<List<FriendReqVO>> deleteFriendReq(@PathVariable("friendReqId") Long friendReqId,
+                                                   @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return friendReqService.deleteFriendReq(friendReqId, userId);
     }
 }

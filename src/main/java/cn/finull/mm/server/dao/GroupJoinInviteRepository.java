@@ -18,4 +18,8 @@ public interface GroupJoinInviteRepository extends JpaRepository<GroupJoinInvite
     List<GroupJoinInvite> findAllByInviteUserIdOrderByUpdateTimeDesc(Long inviteUserId);
 
     boolean existsByGroupJoinInviteIdAndInviteUserId(Long groupJoinInviteId, Long inviteUserId);
+
+    boolean existsByGroupIdAndInviteUserId(Long groupId, Long inviteUserId);
+
+    void deleteByGroupId(Long groupId);
 }

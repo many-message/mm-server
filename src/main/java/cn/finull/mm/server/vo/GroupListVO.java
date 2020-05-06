@@ -12,12 +12,14 @@ import java.util.List;
  * Copyright (C) HPE, All rights reserved.
  *
  * @author Ma, Chenxi
- * @date 2020-02-16 16:28
+ * @date 2020-05-06 19:46
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserMsgVO {
-    private UserVO sendUser;
-    private List<MsgVO> messages;
+public class GroupListVO {
+
+    private List<GroupVO> myGroups;
+
+    private List<GroupVO> joinGroups;
 }

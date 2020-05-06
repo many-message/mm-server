@@ -21,4 +21,9 @@ public class UserVO {
     private String nickname;
     private String email;
     private UserSexEnum sex;
+
+    /**
+     * 是否为好友
+     */
+    private Boolean friend;
 }

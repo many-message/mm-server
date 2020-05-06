@@ -60,6 +60,14 @@ public interface UserService {
      */
     RespVO<List<UserVO>> searchUser(String keyword);
 
+    /**
+     * 查询用户详情
+     * @param userId
+     * @param currentUserId 当前登录用户ID
+     * @return
+     */
+    RespVO<UserVO> getUser(Long userId, Long currentUserId);
+
     // admin
 
     /**

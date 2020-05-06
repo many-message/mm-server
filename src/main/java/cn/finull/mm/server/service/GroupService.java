@@ -4,6 +4,8 @@ import cn.finull.mm.server.common.enums.GroupStatusEnum;
 import cn.finull.mm.server.param.GroupAddParam;
 import cn.finull.mm.server.param.GroupUpdateParam;
 import cn.finull.mm.server.param.enums.GroupQueryTypeEnum;
+import cn.finull.mm.server.vo.GroupDetailVO;
+import cn.finull.mm.server.vo.GroupListVO;
 import cn.finull.mm.server.vo.GroupVO;
 import cn.finull.mm.server.common.vo.PageVO;
 import cn.finull.mm.server.common.vo.RespVO;
@@ -34,7 +36,7 @@ public interface GroupService {
      * @param userId
      * @return
      */
-    RespVO<GroupVO> updateGroup(GroupUpdateParam groupUpdateParam, Long userId);
+    RespVO<GroupDetailVO> updateGroup(GroupUpdateParam groupUpdateParam, Long userId);
 
     /**
      * 获取自己的所有群
@@ -52,12 +54,28 @@ public interface GroupService {
     RespVO<List<GroupVO>> searchGroups(String keyword);
 
     /**
+     * 查询群聊详情
+     * @param groupId
+     * @param userId
+     * @return
+     */
+    RespVO<GroupVO> getGroup(Long groupId, Long userId);
+
+    /**
+     * 查询群详情，包括群成员信息
+     * @param groupId
+     * @param userId
+     * @return
+     */
+    RespVO<GroupDetailVO> getGroupDetail(Long groupId, Long userId);
+
+    /**
      * 删除群
      * @param groupId
      * @param userId
      * @return
      */
-    RespVO deleteGroup(Long groupId, Long userId);
+    RespVO<GroupListVO> deleteGroup(Long groupId, Long userId);
 
     // admin
 

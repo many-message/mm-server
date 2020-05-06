@@ -1,6 +1,8 @@
 package cn.finull.mm.server.service;
 
 import cn.finull.mm.server.common.enums.GroupMemberTypeEnum;
+import cn.finull.mm.server.vo.GroupDetailVO;
+import cn.finull.mm.server.vo.GroupListVO;
 import cn.finull.mm.server.vo.GroupMemberVO;
 import cn.finull.mm.server.common.vo.RespVO;
 
@@ -30,7 +32,7 @@ public interface GroupMemberService {
      * @param userId
      * @return
      */
-    RespVO<GroupMemberVO> updateGroupMemberType(Long groupMemberId, GroupMemberTypeEnum groupMemberType, Long userId);
+    RespVO<List<GroupMemberVO>> updateGroupMemberType(Long groupMemberId, GroupMemberTypeEnum groupMemberType, Long userId);
 
     /**
      * 修改群备注名
@@ -39,7 +41,7 @@ public interface GroupMemberService {
      * @param userId
      * @return
      */
-    RespVO<GroupMemberVO> updateGroupMemberName(Long groupMemberId, String groupName, Long userId);
+    RespVO<GroupDetailVO> updateGroupMemberName(Long groupMemberId, String groupName, Long userId);
 
     /**
      * 删除一个成员
@@ -47,7 +49,7 @@ public interface GroupMemberService {
      * @param userId
      * @return
      */
-    RespVO deleteGroupMember(Long groupMemberId, Long userId);
+    RespVO<List<GroupMemberVO>> deleteGroupMember(Long groupMemberId, Long userId);
 
     /**
      * 退群
@@ -55,7 +57,7 @@ public interface GroupMemberService {
      * @param userId
      * @return
      */
-    RespVO leaveGroup(Long groupId, Long userId);
+    RespVO<GroupListVO> leaveGroup(Long groupId, Long userId);
 
     // private
 

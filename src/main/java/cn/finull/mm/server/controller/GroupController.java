@@ -5,6 +5,8 @@ import cn.finull.mm.server.param.GroupAddParam;
 import cn.finull.mm.server.param.GroupUpdateParam;
 import cn.finull.mm.server.param.enums.GroupQueryTypeEnum;
 import cn.finull.mm.server.service.GroupService;
+import cn.finull.mm.server.vo.GroupDetailVO;
+import cn.finull.mm.server.vo.GroupListVO;
 import cn.finull.mm.server.vo.GroupVO;
 import cn.finull.mm.server.common.vo.RespVO;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +48,7 @@ public class GroupController {
      * @return
      */
     @PutMapping("/groups")
-    public RespVO<GroupVO> updateGroup(@Validated @RequestBody GroupUpdateParam groupUpdateParam,
+    public RespVO<GroupDetailVO> updateGroup(@Validated @RequestBody GroupUpdateParam groupUpdateParam,
                                        @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return groupService.updateGroup(groupUpdateParam, userId);
     }
@@ -64,13 +66,37 @@ public class GroupController {
     }
 
     /**
-     * 根据群号搜索群
+     * 根据群号、群名称模糊搜索群
      * @param keyword
      * @return
      */
-    @GetMapping("/groups/{keyword}")
+    @GetMapping("/groups/{keyword}/search")
     public RespVO<List<GroupVO>> searchGroups(@PathVariable("keyword") String keyword) {
         return groupService.searchGroups(keyword);
+    }
+
+    /**
+     * 查询群聊详情
+     * @param groupId
+     * @param userId
+     * @return
+     */
+    @GetMapping("/groups/{groupId}")
+    public RespVO<GroupVO> getGroup(@PathVariable("groupId") Long groupId,
+                                    @RequestAttribute(RequestConstant.USER_ID) Long userId) {
+        return groupService.getGroup(groupId, userId);
+    }
+
+    /**
+     * 查询群详情，包括群成员信息
+     * @param groupId
+     * @param userId
+     * @return
+     */
+    @GetMapping("/groups/{groupId}/detail")
+    public RespVO<GroupDetailVO> getGroupDetail(@PathVariable("groupId") Long groupId,
+                                                @RequestAttribute(RequestConstant.USER_ID) Long userId) {
+        return groupService.getGroupDetail(groupId, userId);
     }
 
     /**
@@ -80,8 +106,8 @@ public class GroupController {
      * @return
      */
     @DeleteMapping("/groups/{groupId}")
-    public RespVO deleteGroup(@PathVariable("groupId") Long groupId,
-                              @RequestAttribute(RequestConstant.USER_ID) Long userId) {
+    public RespVO<GroupListVO> deleteGroup(@PathVariable("groupId") Long groupId,
+                                           @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return groupService.deleteGroup(groupId, userId);
     }
 }

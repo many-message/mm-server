@@ -1,9 +1,8 @@
 package cn.finull.mm.server.service.impl;
 
 import cn.finull.mm.server.common.constant.RespCode;
-import cn.finull.mm.server.dao.FriendGroupRepository;
-import cn.finull.mm.server.dao.FriendRepository;
-import cn.finull.mm.server.dao.UserRepository;
+import cn.finull.mm.server.common.enums.ChatTypeEnum;
+import cn.finull.mm.server.dao.*;
 import cn.finull.mm.server.entity.Friend;
 import cn.finull.mm.server.entity.FriendGroup;
 import cn.finull.mm.server.entity.User;
@@ -12,7 +11,6 @@ import cn.finull.mm.server.service.FriendService;
 import cn.finull.mm.server.common.util.RespUtil;
 import cn.finull.mm.server.vo.FriendGroupVO;
 import cn.finull.mm.server.vo.FriendVO;
-import cn.finull.mm.server.vo.privates.FriendDelPrivateVO;
 import cn.finull.mm.server.common.vo.RespVO;
 import cn.hutool.core.bean.BeanUtil;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +38,8 @@ public class FriendServiceImpl implements FriendService {
     private final FriendRepository friendRepository;
     private final FriendGroupRepository friendGroupRepository;
     private final UserRepository userRepository;
+    private final ChatRepository chatRepository;
+    private final MsgRepository msgRepository;
 
     @Autowired
     private FriendGroupService friendGroupService;
@@ -85,6 +85,9 @@ public class FriendServiceImpl implements FriendService {
         User user = userRepository.getOne(friend.getFriendUserId());
         BeanUtil.copyProperties(user, friendVO);
 
+        FriendGroup friendGroup = friendGroupRepository.getOne(friend.getFriendGroupId());
+        friendVO.setFriendGroupName(friendGroup.getFriendGroupName());
+
         return friendVO;
     }
 
@@ -108,16 +111,26 @@ public class FriendServiceImpl implements FriendService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public RespVO<FriendDelPrivateVO> deleteFriend(Long friendId, Long userId) {
+    public RespVO<List<FriendGroupVO>> deleteFriend(Long friendId, Long userId) {
         Optional<Friend> friendOptional = friendRepository.findByFriendIdAndUserId(friendId, userId);
         if (friendOptional.isEmpty()) {
-            return RespUtil.error(RespCode.FORBIDDEN);
+            return RespUtil.error(RespCode.NOT_FOUND);
         }
 
         Friend friend = friendOptional.get();
+
+        // 解除好友关系
         friendRepository.deleteByUserIdAndFriendUserId(friend.getFriendUserId(), friend.getUserId());
         friendRepository.delete(friend);
 
-        return RespUtil.OK(new FriendDelPrivateVO(userId, friend.getFriendUserId()));
+        // 删除聊天列表
+        chatRepository.deleteByUserIdAndChatObjIdAndChatType(userId, friend.getFriendUserId(), ChatTypeEnum.USER);
+        chatRepository.deleteByUserIdAndChatObjIdAndChatType(friend.getFriendUserId(), userId, ChatTypeEnum.USER);
+
+        // 删除未签收消息
+        msgRepository.deleteBySendUserIdAndRecvUserId(userId, friend.getFriendUserId());
+        msgRepository.deleteBySendUserIdAndRecvUserId(friend.getFriendUserId(), userId);
+
+        return friendGroupService.getFriendGroups(userId);
     }
 }

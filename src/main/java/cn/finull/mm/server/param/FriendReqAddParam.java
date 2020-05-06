@@ -1,4 +1,4 @@
-package cn.finull.mm.server.param.privates;
+package cn.finull.mm.server.param;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,16 +14,28 @@ import javax.validation.constraints.NotNull;
  * Copyright (C) HPE, All rights reserved.
  *
  * @author Ma, Chenxi
- * @date 2020-02-16 12:10
+ * @date 2020-05-06 18:07
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupJoinReqAddPrivateParam {
+public class FriendReqAddParam {
+
+    /**
+     * 接收者ID
+     */
     @NotNull
-    private Long reqUserId;
+    private Long recvUserId;
+
+    /**
+     * 好友所在分组
+     */
     @NotNull
-    private Long groupId;
+    private Long friendGroupId;
+
+    /**
+     * 请求消息
+     */
     @NotBlank
     @Length(max = 64)
     private String reqMsg;

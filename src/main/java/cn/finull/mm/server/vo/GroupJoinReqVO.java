@@ -1,14 +1,11 @@
 package cn.finull.mm.server.vo;
 
-import cn.finull.mm.server.common.enums.GroupJoinReqStatusEnum;
-import cn.finull.mm.server.vo.GroupVO;
-import cn.finull.mm.server.vo.UserVO;
+import cn.finull.mm.server.common.enums.UserSexEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Description
@@ -22,12 +19,30 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GroupJoinReqVO {
+
     private Long groupJoinReqId;
-    private UserVO reqUser;
-    private GroupVO group;
+
+    /**
+     * 请求用户信息
+     */
+    private Long reqUserId;
+    private String nickname;
+    private String email;
+    private UserSexEnum sex;
+
+    /**
+     * 群聊信息
+     */
+    private Long groupId;
+    private String groupName;
+    private String groupNum;
+    private String groupDesc;
+
+    /**
+     * 请求消息
+     */
     private String reqMsg;
-    private GroupJoinReqStatusEnum groupJoinReqStatus;
+
     private Date createTime;
     private Date updateTime;
-    private List<Long> recUserIds;
 }

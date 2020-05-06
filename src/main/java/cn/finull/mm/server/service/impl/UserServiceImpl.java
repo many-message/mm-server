@@ -5,6 +5,7 @@ import cn.finull.mm.server.common.constant.Constant;
 import cn.finull.mm.server.common.constant.RespCode;
 import cn.finull.mm.server.common.enums.UserStatusEnum;
 import cn.finull.mm.server.dao.FriendGroupRepository;
+import cn.finull.mm.server.dao.FriendRepository;
 import cn.finull.mm.server.dao.UserRepository;
 import cn.finull.mm.server.entity.FriendGroup;
 import cn.finull.mm.server.entity.User;
@@ -61,6 +62,7 @@ public class UserServiceImpl implements UserService {
     private final MmConfig mmConfig;
     private final UserRepository userRepository;
     private final FriendGroupRepository friendGroupRepository;
+    private final FriendRepository friendRepository;
 
     private final SecureService secureService;
 
@@ -198,17 +200,37 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public RespVO<List<UserVO>> searchUser(String keyword) {
-        List<UserVO> users = userRepository.findAllByEmailOrNicknameLike(keyword, "%" + keyword + "%")
+        keyword = "%" + keyword + "%";
+
+        List<UserVO> users = userRepository.findByEmailLikeOrNicknameLike(keyword, keyword)
                 .stream()
                 .map(this::buildUserVO)
                 .collect(Collectors.toList());
-        return null;
+
+        return RespUtil.OK(users);
     }
 
     private UserVO buildUserVO(User user) {
         UserVO userVO = new UserVO();
         BeanUtil.copyProperties(user, userVO);
         return userVO;
+    }
+
+    @Override
+    public RespVO<UserVO> getUser(Long userId, Long currentUserId) {
+        Optional<User> optional = userRepository.findById(userId);
+
+        if (optional.isEmpty()) {
+            return RespUtil.error(RespCode.NOT_FOUND, "用户不存在！");
+        }
+
+        UserVO userVO = buildUserVO(optional.get());
+
+        Boolean friend = friendRepository.existsByUserIdAndFriendUserId(currentUserId, userId);
+
+        userVO.setFriend(friend);
+
+        return RespUtil.OK(userVO);
     }
 
     @Override

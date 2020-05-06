@@ -1,4 +1,4 @@
-package cn.finull.mm.server.vo.privates;
+package cn.finull.mm.server.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,12 +10,20 @@ import lombok.NoArgsConstructor;
  * Copyright (C) HPE, All rights reserved.
  *
  * @author Ma, Chenxi
- * @date 2020-02-16 17:09
+ * @date 2020-05-05 15:05
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FriendDelPrivateVO {
-    private Long sendUserId;
-    private Long recvUserId;
+public class FriendGroupPreviewVO {
+
+    /**
+     * 分组ID
+     */
+    private Long friendGroupId;
+
+    /**
+     * 分组名
+     */
+    private String friendGroupName;
 }

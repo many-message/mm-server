@@ -20,7 +20,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "group_msg")
+@Table(name = "group_chat")
 public class Group {
 
     @Id

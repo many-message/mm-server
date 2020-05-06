@@ -1,11 +1,13 @@
 package cn.finull.mm.server.controller;
 
 import cn.finull.mm.server.common.constant.RequestConstant;
+import cn.finull.mm.server.param.GroupJoinInviteAddParam;
 import cn.finull.mm.server.service.GroupJoinInviteService;
 import cn.finull.mm.server.vo.GroupJoinInviteVO;
 import cn.finull.mm.server.common.vo.RespVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +28,30 @@ public class GroupJoinInviteController {
     private final GroupJoinInviteService groupJoinInviteService;
 
     /**
+     * 邀请好友加入群聊
+     * @param groupJoinInviteAddParam
+     * @param userId
+     * @return
+     */
+    @PostMapping("/group-join-invites")
+    public RespVO sendGroupJoinInvite(@Validated @RequestBody GroupJoinInviteAddParam groupJoinInviteAddParam,
+                                      @RequestAttribute(RequestConstant.USER_ID) Long userId) {
+        return groupJoinInviteService.sendGroupJoinInvite(groupJoinInviteAddParam, userId);
+    }
+
+    /**
+     * 同意加入群聊
+     * @param groupJoinInviteId
+     * @param userId
+     * @return
+     */
+    @PatchMapping("/group-join-invites/{groupJoinInviteId}")
+    public RespVO<List<GroupJoinInviteVO>> agreeGroupJoinInvite(@PathVariable("groupJoinInviteId") Long groupJoinInviteId,
+                                                                @RequestAttribute(RequestConstant.USER_ID) Long userId) {
+        return groupJoinInviteService.agreeGroupJoinInvite(groupJoinInviteId, userId);
+    }
+
+    /**
      * 获取所有入群邀请
      * @param userId
      * @return
@@ -42,7 +68,7 @@ public class GroupJoinInviteController {
      * @return
      */
     @DeleteMapping("/group-join-invites/{groupJoinInviteId}")
-    public RespVO deleteGroupJoinInvite(@PathVariable("groupJoinInviteId") Long groupJoinInviteId,
+    public RespVO<List<GroupJoinInviteVO>> deleteGroupJoinInvite(@PathVariable("groupJoinInviteId") Long groupJoinInviteId,
                                         @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return groupJoinInviteService.deleteGroupJoinInvite(groupJoinInviteId, userId);
     }

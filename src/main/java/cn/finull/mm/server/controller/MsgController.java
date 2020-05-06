@@ -2,7 +2,7 @@ package cn.finull.mm.server.controller;
 
 import cn.finull.mm.server.common.constant.RequestConstant;
 import cn.finull.mm.server.service.MsgService;
-import cn.finull.mm.server.vo.UserMsgVO;
+import cn.finull.mm.server.vo.MsgVO;
 import cn.finull.mm.server.common.vo.RespVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +27,14 @@ public class MsgController {
 
     /**
      * 获取所有未签收的消息
-     * @param userId
+     * @param sendUserId
+     * @param recvUserId
      * @return
      */
-    @GetMapping("/messages")
-    public RespVO<List<UserMsgVO>> getMessages(@RequestAttribute(RequestConstant.USER_ID) Long userId) {
-        return msgService.getMessages(userId);
+    @GetMapping("/messages/{sendUserId}")
+    public RespVO<List<MsgVO>> getMessages(@PathVariable("sendUserId") Long sendUserId,
+                                           @RequestAttribute(RequestConstant.USER_ID) Long recvUserId) {
+        return msgService.getMessages(sendUserId, recvUserId);
     }
 
     /**
@@ -41,8 +43,8 @@ public class MsgController {
      * @param recvUserId
      * @return
      */
-    @PatchMapping("/messages")
-    public RespVO recvMessage(Long sendUserId, @RequestAttribute(RequestConstant.USER_ID) Long recvUserId) {
+    @PatchMapping("/messages/{sendUserId}")
+    public RespVO recvMessage(@PathVariable("sendUserId") Long sendUserId, @RequestAttribute(RequestConstant.USER_ID) Long recvUserId) {
         return msgService.recvMessage(sendUserId, recvUserId);
     }
 }

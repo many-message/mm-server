@@ -47,11 +47,11 @@ public class GroupMember {
     @Column(name = "update_time", nullable = false)
     private Date updateTime;
 
-    public GroupMember(Long groupId, Long userId, GroupMemberTypeEnum groupMemberType) {
+    public GroupMember(Long groupId, Long userId, String groupMemberName, GroupMemberTypeEnum groupMemberType) {
         this.groupId = groupId;
         this.userId = userId;
         this.groupMemberType = groupMemberType;
-        groupMemberName = "";
+        this.groupMemberName = groupMemberName;
         createTime = new Date();
         updateTime = new Date();
     }

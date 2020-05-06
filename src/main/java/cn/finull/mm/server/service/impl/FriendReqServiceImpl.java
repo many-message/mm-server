@@ -1,28 +1,27 @@
 package cn.finull.mm.server.service.impl;
 
+import cn.finull.mm.server.common.constant.Constant;
 import cn.finull.mm.server.common.constant.RespCode;
-import cn.finull.mm.server.common.enums.FriendReqStatusEnum;
+import cn.finull.mm.server.dao.FriendGroupRepository;
 import cn.finull.mm.server.dao.FriendRepository;
 import cn.finull.mm.server.dao.FriendReqRepository;
 import cn.finull.mm.server.dao.UserRepository;
 import cn.finull.mm.server.entity.Friend;
 import cn.finull.mm.server.entity.FriendReq;
 import cn.finull.mm.server.entity.User;
-import cn.finull.mm.server.param.privates.FriendReqAddPrivateParam;
+import cn.finull.mm.server.param.FriendReqAddParam;
+import cn.finull.mm.server.param.FriendReqAgreeParam;
 import cn.finull.mm.server.service.FriendReqService;
 import cn.finull.mm.server.common.util.RespUtil;
 import cn.finull.mm.server.vo.FriendReqVO;
-import cn.finull.mm.server.vo.UserVO;
 import cn.finull.mm.server.common.vo.RespVO;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,75 +41,81 @@ public class FriendReqServiceImpl implements FriendReqService {
     private final FriendReqRepository friendReqRepository;
     private final UserRepository userRepository;
     private final FriendRepository friendRepository;
+    private final FriendGroupRepository friendGroupRepository;
 
     @Override
-    public RespVO<FriendReqVO> addFriendReq(FriendReqAddPrivateParam friendReqAddPrivateParam) {
-        if (friendRepository.existsByUserIdAndFriendUserId(friendReqAddPrivateParam.getReqUserId(), friendReqAddPrivateParam.getRecUserId())) {
+    public RespVO sendFriendReq(FriendReqAddParam friendReqAddParam, Long userId) {
+        if (friendReqRepository.existsByReqUserIdAndRecvUserId(userId, friendReqAddParam.getRecvUserId())) {
+            return RespUtil.error(RespCode.BAD_REQUEST, "请求已发送，请耐心等待！");
+        }
+
+        if (friendRepository.existsByUserIdAndFriendUserId(userId, friendReqAddParam.getRecvUserId())) {
             return RespUtil.error(RespCode.FORBIDDEN, "已是好友关系！");
         }
 
-        Optional<User> reqUserOptional = userRepository.findById(friendReqAddPrivateParam.getReqUserId());
-        Optional<User> recUserOptional = userRepository.findById(friendReqAddPrivateParam.getRecUserId());
-
-        if (reqUserOptional.isEmpty() || recUserOptional.isEmpty()) {
+        Optional<User> recUserOptional = userRepository.findById(friendReqAddParam.getRecvUserId());
+        if (recUserOptional.isEmpty()) {
             return RespUtil.error(RespCode.NOT_FOUND, "用户不存在！");
         }
 
-        User reqUser = reqUserOptional.get();
-        User recUser = recUserOptional.get();
-
-        FriendReq friendReq = new FriendReq(reqUser.getUserId(), recUser.getUserId());
-
-        // 若已存在请求，则修改请求内容
-        Optional<FriendReq> friendReqOptional = friendReqRepository
-                .findByReqUserIdAndRecUserIdAndFriendReqStatus(reqUser.getUserId(), recUser.getUserId(), FriendReqStatusEnum.REQ);
-        if (friendReqOptional.isPresent()) {
-            friendReq = friendReqOptional.get();
-        }
-
-        friendReq.setReqMsg(StrUtil.blankToDefault(friendReqAddPrivateParam.getReqMsg(), ""));
+        FriendReq friendReq = new FriendReq(
+                userId,
+                friendReqAddParam.getRecvUserId(),
+                friendReqAddParam.getFriendGroupId(),
+                friendReqAddParam.getReqMsg());
 
         friendReqRepository.save(friendReq);
 
-        return RespUtil.OK(buildFriendReqVO(friendReq, reqUser));
+        return RespUtil.OK();
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public RespVO<FriendReqVO> updateFriendReqStatus(Long friendReqId, FriendReqStatusEnum friendReqStatus) {
-        Optional<FriendReq> friendReqOptional = friendReqRepository.findById(friendReqId);
-        if (friendReqOptional.isEmpty()) {
-            return RespUtil.error(RespCode.NOT_FOUND, "好友请求不存在！");
+    public RespVO<List<FriendReqVO>> agreeFriendReq(FriendReqAgreeParam friendReqAgreeParam, Long userId) {
+        Optional<FriendReq> optional = friendReqRepository.findByFriendReqIdAndRecvUserId(
+                friendReqAgreeParam.getFriendReqId(), userId);
+
+        if (optional.isEmpty()) {
+            return RespUtil.error(RespCode.NOT_FOUND, "请求不存在！");
         }
 
-        FriendReq friendReq = friendReqOptional.get();
-        friendReq.setFriendReqStatus(friendReqStatus);
-        friendReq.setUpdateTime(new Date());
-        friendReqRepository.save(friendReq);
+        FriendReq friendReq = optional.get();
 
-        // 同意建立好友关系
-        if (friendReqStatus == FriendReqStatusEnum.AGREE) {
-            addFriend(friendReq.getReqUserId(), friendReq.getRecUserId());
+        // 不是好友
+        if (!friendRepository.existsByUserIdAndFriendUserId(userId, friendReq.getReqUserId())) {
+
+            User reqUser = userRepository.getOne(friendReq.getReqUserId());
+            User recvUser = userRepository.getOne(friendReq.getRecvUserId());
+
+            // 判断好友分组是否存在
+            if (!friendGroupRepository.existsById(friendReq.getFriendGroupId())) {
+                friendGroupRepository.findByUserIdAndFriendGroupName(reqUser.getUserId(), Constant.FRIEND_GROUP_NAME)
+                        .ifPresent(friendGroup -> friendReq.setFriendGroupId(friendGroup.getFriendGroupId()));
+            }
+
+            Friend reqFriend = new Friend(
+                    reqUser.getUserId(),
+                    recvUser.getUserId(),
+                    friendReq.getFriendGroupId(),
+                    recvUser.getNickname());
+
+            Friend recvFriend = new Friend(
+                    recvUser.getUserId(),
+                    reqUser.getUserId(),
+                    friendReqAgreeParam.getFriendGroupId(),
+                    reqUser.getNickname());
+
+            friendRepository.saveAll(List.of(reqFriend, recvFriend));
         }
 
-        return RespUtil.OK(buildFriendReqVO(friendReq));
-    }
+        friendReqRepository.deleteById(friendReq.getFriendReqId());
 
-    /**
-     * 建立好友关系
-     * @param reqUserId
-     * @param recUserId
-     */
-    private void addFriend(Long reqUserId, Long recUserId) {
-        if (!friendRepository.existsByUserIdAndFriendUserId(reqUserId, recUserId)) {
-            List<Friend> friends = List.of(new Friend(reqUserId, recUserId), new Friend(recUserId, reqUserId));
-            friendRepository.saveAll(friends);
-        }
+        return getFriendReqs(userId);
     }
 
     @Override
     public RespVO<List<FriendReqVO>> getFriendReqs(Long userId) {
-        List<FriendReq> reqs = friendReqRepository.findAllByRecUserIdOrderByUpdateTimeDesc(userId);
+        List<FriendReq> reqs = friendReqRepository.findByRecvUserIdOrderByCreateTimeDesc(userId);
 
         List<FriendReqVO> friendReqs = reqs.stream().map(this::buildFriendReqVO).collect(Collectors.toList());
 
@@ -118,37 +123,34 @@ public class FriendReqServiceImpl implements FriendReqService {
     }
 
     private FriendReqVO buildFriendReqVO(FriendReq friendReq) {
-        User reqUser = userRepository.getOne(friendReq.getReqUserId());
-        return buildFriendReqVO(friendReq, reqUser);
-    }
-
-    private FriendReqVO buildFriendReqVO(FriendReq friendReq, User reqUser) {
         // 好友请求信息
         FriendReqVO friendReqVO = new FriendReqVO();
-        BeanUtil.copyProperties(friendReq, friendReqVO);
+
+        User reqUser = userRepository.getOne(friendReq.getReqUserId());
 
         // 请求用户信息
-        UserVO reqUserVO = new UserVO();
-        BeanUtil.copyProperties(reqUser, reqUserVO);
-        friendReqVO.setReqUser(reqUserVO);
+        BeanUtil.copyProperties(reqUser, friendReqVO);
+
+        // 请求信息
+        BeanUtil.copyProperties(friendReq, friendReqVO);
 
         return friendReqVO;
     }
 
     @Override
-    public RespVO deleteFriendReq(Long friendReqId, Long userId) {
+    public RespVO<List<FriendReqVO>> deleteFriendReq(Long friendReqId, Long userId) {
         Optional<FriendReq> friendReqOptional = friendReqRepository.findById(friendReqId);
         if (friendReqOptional.isEmpty()) {
             return RespUtil.error(RespCode.NOT_FOUND, "好友请求不存在！");
         }
 
         FriendReq friendReq = friendReqOptional.get();
-        if (ObjectUtil.notEqual(friendReq.getRecUserId(), userId)) {
+        if (ObjectUtil.notEqual(friendReq.getRecvUserId(), userId)) {
             return RespUtil.error(RespCode.FORBIDDEN);
         }
 
         friendReqRepository.delete(friendReq);
 
-        return RespUtil.OK();
+        return getFriendReqs(userId);
     }
 }

@@ -1,15 +1,18 @@
 package cn.finull.mm.server.service.impl;
 
 import cn.finull.mm.server.common.constant.RespCode;
+import cn.finull.mm.server.common.enums.ChatTypeEnum;
 import cn.finull.mm.server.common.enums.GroupMemberTypeEnum;
+import cn.finull.mm.server.dao.ChatRepository;
 import cn.finull.mm.server.dao.GroupMemberRepository;
 import cn.finull.mm.server.dao.UserRepository;
 import cn.finull.mm.server.entity.GroupMember;
 import cn.finull.mm.server.entity.User;
+import cn.finull.mm.server.param.enums.GroupQueryTypeEnum;
 import cn.finull.mm.server.service.GroupMemberService;
 import cn.finull.mm.server.common.util.RespUtil;
-import cn.finull.mm.server.vo.GroupMemberVO;
-import cn.finull.mm.server.vo.UserVO;
+import cn.finull.mm.server.service.GroupService;
+import cn.finull.mm.server.vo.*;
 import cn.finull.mm.server.common.vo.RespVO;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -36,6 +39,10 @@ public class GroupMemberServiceImpl implements GroupMemberService {
 
     private final GroupMemberRepository groupMemberRepository;
     private final UserRepository userRepository;
+    private final ChatRepository chatRepository;
+
+    @Autowired
+    private GroupService groupService;
 
     @Override
     public RespVO<List<GroupMemberVO>> getGroupMembers(Long groupId) {
@@ -47,7 +54,7 @@ public class GroupMemberServiceImpl implements GroupMemberService {
     }
 
     @Override
-    public RespVO<GroupMemberVO> updateGroupMemberType(Long groupMemberId, GroupMemberTypeEnum groupMemberType, Long userId) {
+    public RespVO<List<GroupMemberVO>> updateGroupMemberType(Long groupMemberId, GroupMemberTypeEnum groupMemberType, Long userId) {
         Optional<GroupMember> groupMemberOptional = groupMemberRepository.findById(groupMemberId);
         if (groupMemberOptional.isEmpty()) {
             return RespUtil.error(RespCode.NOT_FOUND, "成员不存在！");
@@ -62,11 +69,11 @@ public class GroupMemberServiceImpl implements GroupMemberService {
         groupMember.setUpdateTime(new Date());
         groupMemberRepository.save(groupMember);
 
-        return RespUtil.OK(buildGroupMemberVO(groupMember));
+        return getGroupMembers(groupMember.getGroupId());
     }
 
     @Override
-    public RespVO<GroupMemberVO> updateGroupMemberName(Long groupMemberId, String groupName, Long userId) {
+    public RespVO<GroupDetailVO> updateGroupMemberName(Long groupMemberId, String groupName, Long userId) {
         Optional<GroupMember> groupMemberOptional = groupMemberRepository.findById(groupMemberId);
         if (groupMemberOptional.isEmpty()) {
             return RespUtil.error(RespCode.NOT_FOUND, "成员不存在！");
@@ -82,42 +89,62 @@ public class GroupMemberServiceImpl implements GroupMemberService {
         groupMember.setUpdateTime(new Date());
         groupMemberRepository.save(groupMember);
 
-        return RespUtil.OK(buildGroupMemberVO(groupMember));
+        return groupService.getGroupDetail(groupMember.getGroupId(), userId);
     }
 
     private GroupMemberVO buildGroupMemberVO(GroupMember groupMember) {
         GroupMemberVO groupMemberVO = new GroupMemberVO();
-        BeanUtil.copyProperties(groupMember, groupMemberVO);
 
         User user = userRepository.getOne(groupMember.getUserId());
-        UserVO userVO = new UserVO();
-        BeanUtil.copyProperties(user, userVO);
-        groupMemberVO.setGroupMemberUser(userVO);
+        BeanUtil.copyProperties(user, groupMemberVO);
+
+        BeanUtil.copyProperties(groupMember, groupMemberVO);
 
         return groupMemberVO;
     }
 
     @Override
-    public RespVO deleteGroupMember(Long groupMemberId, Long userId) {
+    public RespVO<List<GroupMemberVO>> deleteGroupMember(Long groupMemberId, Long userId) {
         Optional<GroupMember> groupMemberOptional = groupMemberRepository.findById(groupMemberId);
         if (groupMemberOptional.isEmpty()) {
             return RespUtil.error(RespCode.NOT_FOUND, "成员不存在！");
         }
 
         GroupMember groupMember = groupMemberOptional.get();
-        if (ObjectUtil.equal(groupMember.getUserId(), userId) || !groupMemberRepository.existsByGroupIdAndUserIdAndGroupMemberTypeNot(groupMember.getGroupId(), userId, GroupMemberTypeEnum.ORDINARY)) {
+        if (ObjectUtil.equal(groupMember.getUserId(), userId)
+                || groupMember.getGroupMemberType() == GroupMemberTypeEnum.OWNER
+                || groupMemberRepository.existsByGroupIdAndUserIdAndGroupMemberType(
+                        groupMember.getGroupId(), userId, GroupMemberTypeEnum.ORDINARY)) {
             return RespUtil.error(RespCode.FORBIDDEN);
         }
 
+        // 删除成员
         groupMemberRepository.delete(groupMember);
 
-        return RespUtil.OK();
+        // 删除聊天列表
+        chatRepository.deleteByUserIdAndChatObjIdAndChatType(
+                groupMember.getUserId(), groupMember.getGroupId(), ChatTypeEnum.GROUP);
+
+        return getGroupMembers(groupMember.getGroupId());
     }
 
     @Override
-    public RespVO leaveGroup(Long groupId, Long userId) {
+    public RespVO<GroupListVO> leaveGroup(Long groupId, Long userId) {
+        if (groupMemberRepository.existsByGroupIdAndUserIdAndGroupMemberType(
+                groupId, userId, GroupMemberTypeEnum.OWNER)) {
+            return RespUtil.error(RespCode.FORBIDDEN);
+        }
+
+        // 删除群成员
         groupMemberRepository.deleteByGroupIdAndUserId(groupId, userId);
-        return RespUtil.OK();
+
+        // 删除聊天列表
+        chatRepository.deleteByUserIdAndChatObjIdAndChatType(userId, groupId, ChatTypeEnum.GROUP);
+
+        List<GroupVO> myGroups = groupService.getGroups(GroupQueryTypeEnum.MY_GROUP, userId).getData();
+        List<GroupVO> joinGroups = groupService.getGroups(GroupQueryTypeEnum.MY_JOIN_GROUP, userId).getData();
+
+        return RespUtil.OK(new GroupListVO(myGroups, joinGroups));
     }
 
     @Override

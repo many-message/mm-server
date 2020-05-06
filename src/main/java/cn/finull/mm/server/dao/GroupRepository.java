@@ -21,7 +21,7 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 
     List<Group> findAllByGroupIdInOrderByCreateTimeDesc(List<Long> groupIds);
 
-    List<Group> findAllByGroupNumOrGroupNameLike(String groupNum, String groupName);
+    List<Group> findByGroupNumLikeOrGroupNameLike(String groupNum, String groupName);
 
     Page<Group> findAllByGroupNumOrGroupNameLike(String groupNum, String groupName, Pageable pageable);
 }

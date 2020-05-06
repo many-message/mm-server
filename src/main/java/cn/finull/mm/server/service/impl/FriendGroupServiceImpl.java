@@ -9,6 +9,7 @@ import cn.finull.mm.server.param.FriendGroupUpdateParam;
 import cn.finull.mm.server.service.FriendGroupService;
 import cn.finull.mm.server.common.util.RespUtil;
 import cn.finull.mm.server.service.FriendService;
+import cn.finull.mm.server.vo.FriendGroupPreviewVO;
 import cn.finull.mm.server.vo.FriendGroupVO;
 import cn.finull.mm.server.common.vo.RespVO;
 import cn.finull.mm.server.vo.FriendVO;
@@ -133,5 +134,20 @@ public class FriendGroupServiceImpl implements FriendGroupService {
         friendGroupRepository.deleteById(friendGroupId);
 
         return getFriendGroups(userId);
+    }
+
+    @Override
+    public RespVO<List<FriendGroupPreviewVO>> getFriendGroupPreviews(Long userId) {
+        List<FriendGroupPreviewVO> friendGroups = friendGroupRepository.findAllByUserIdOrderByCreateTimeAsc(userId)
+                .stream()
+                .map(this::buildFriendGroupPreviewVO)
+                .collect(Collectors.toList());
+        return RespUtil.OK(friendGroups);
+    }
+
+    private FriendGroupPreviewVO buildFriendGroupPreviewVO(FriendGroup friendGroup) {
+        FriendGroupPreviewVO friendGroupPreviewVO = new FriendGroupPreviewVO();
+        BeanUtil.copyProperties(friendGroup, friendGroupPreviewVO);
+        return friendGroupPreviewVO;
     }
 }

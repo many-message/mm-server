@@ -1,9 +1,9 @@
-package cn.finull.mm.server.param.privates;
+package cn.finull.mm.server.param;
 
+import cn.finull.mm.server.common.enums.ChatTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 
@@ -13,16 +13,16 @@ import javax.validation.constraints.NotNull;
  * Copyright (C) HPE, All rights reserved.
  *
  * @author Ma, Chenxi
- * @date 2020-02-14 16:58
+ * @date 2020-05-06 21:07
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FriendReqAddPrivateParam {
+public class ChatAddParam {
+
     @NotNull
-    private Long reqUserId;
+    private Long chatObjId;
+
     @NotNull
-    private Long recUserId;
-    @Length(max = 64)
-    private String reqMsg;
+    private ChatTypeEnum chatType;
 }

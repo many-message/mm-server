@@ -3,6 +3,7 @@ package cn.finull.mm.server.controller;
 import cn.finull.mm.server.common.constant.RequestConstant;
 import cn.finull.mm.server.param.FriendGroupUpdateParam;
 import cn.finull.mm.server.service.FriendGroupService;
+import cn.finull.mm.server.vo.FriendGroupPreviewVO;
 import cn.finull.mm.server.vo.FriendGroupVO;
 import cn.finull.mm.server.common.vo.RespVO;
 import lombok.RequiredArgsConstructor;
@@ -71,5 +72,16 @@ public class FriendGroupController {
     public RespVO<List<FriendGroupVO>> deleteFriendGroup(@PathVariable("friendGroupId") Long friendGroupId,
                                     @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return friendGroupService.deleteFriendGroup(friendGroupId, userId);
+    }
+
+    /**
+     * 预览分组列表
+     * @param userId 当前登录用户ID
+     * @return
+     */
+    @GetMapping("/friend-groups/preview")
+    public RespVO<List<FriendGroupPreviewVO>> getFriendGroupPreviews(
+            @RequestAttribute(RequestConstant.USER_ID) Long userId) {
+        return friendGroupService.getFriendGroupPreviews(userId);
     }
 }

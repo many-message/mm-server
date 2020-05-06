@@ -93,8 +93,20 @@ public class UserController {
      * @param keyword
      * @return
      */
-    @GetMapping("/users/{keyword}")
+    @GetMapping("/users/{keyword}/search")
     public RespVO<List<UserVO>> searchUser(@PathVariable("keyword") String keyword) {
         return userService.searchUser(keyword);
+    }
+
+    /**
+     * 查询用户详情
+     * @param userId
+     * @param currentUserId 当前登录用户ID
+     * @return
+     */
+    @GetMapping("/users/{userId}")
+    public RespVO<UserVO> getUser(@PathVariable("userId") Long userId,
+                                  @RequestAttribute(RequestConstant.USER_ID) Long currentUserId) {
+        return userService.getUser(userId, currentUserId);
     }
 }

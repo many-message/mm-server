@@ -46,4 +46,9 @@ public class FriendVO {
      * 好友性别
      */
     private UserSexEnum sex;
+
+    /**
+     * 分组名
+     */
+    private String friendGroupName;
 }

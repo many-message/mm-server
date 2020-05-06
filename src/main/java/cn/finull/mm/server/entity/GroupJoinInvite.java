@@ -1,6 +1,5 @@
 package cn.finull.mm.server.entity;
 
-import cn.finull.mm.server.common.enums.GroupJoinInviteStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,9 +36,8 @@ public class GroupJoinInvite {
     @Column(name = "invite_user_id", nullable = false)
     private Long inviteUserId;
 
-    @Convert(converter = GroupJoinInviteStatusEnum.GroupJoinInviteStatusEnumConverter.class)
-    @Column(name = "group_join_invite_status", nullable = false)
-    private GroupJoinInviteStatusEnum groupJoinInviteStatus;
+    @Column(name = "invite_msg", nullable = false)
+    private String inviteMsg;
 
     @Column(name = "create_time", nullable = false)
     private Date createTime;
@@ -47,11 +45,11 @@ public class GroupJoinInvite {
     @Column(name = "update_time", nullable = false)
     private Date updateTime;
 
-    public GroupJoinInvite(Long groupId, Long reqUserId, Long inviteUserId) {
+    public GroupJoinInvite(Long groupId, Long reqUserId, Long inviteUserId, String inviteMsg) {
         this.groupId = groupId;
         this.reqUserId = reqUserId;
         this.inviteUserId = inviteUserId;
-        groupJoinInviteStatus = GroupJoinInviteStatusEnum.INVITE;
+        this.inviteMsg = inviteMsg;
         createTime = new Date();
         updateTime = new Date();
     }

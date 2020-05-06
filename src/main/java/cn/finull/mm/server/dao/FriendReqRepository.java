@@ -1,6 +1,5 @@
 package cn.finull.mm.server.dao;
 
-import cn.finull.mm.server.common.enums.FriendReqStatusEnum;
 import cn.finull.mm.server.entity.FriendReq;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -17,7 +16,9 @@ import java.util.Optional;
  */
 public interface FriendReqRepository extends JpaRepository<FriendReq, Long> {
 
-    List<FriendReq> findAllByRecUserIdOrderByUpdateTimeDesc(Long recUserId);
+    List<FriendReq> findByRecvUserIdOrderByCreateTimeDesc(Long recvUserId);
 
-    Optional<FriendReq> findByReqUserIdAndRecUserIdAndFriendReqStatus(Long reqUserId, Long recUserId, FriendReqStatusEnum friendReqStatus);
+    Optional<FriendReq> findByFriendReqIdAndRecvUserId(Long friendReqId, Long recvUserId);
+
+    boolean existsByReqUserIdAndRecvUserId(Long reqUserId, Long recvUserId);
 }

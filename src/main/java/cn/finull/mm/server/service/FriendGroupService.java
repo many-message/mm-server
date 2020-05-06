@@ -1,6 +1,7 @@
 package cn.finull.mm.server.service;
 
 import cn.finull.mm.server.param.FriendGroupUpdateParam;
+import cn.finull.mm.server.vo.FriendGroupPreviewVO;
 import cn.finull.mm.server.vo.FriendGroupVO;
 import cn.finull.mm.server.common.vo.RespVO;
 
@@ -46,4 +47,11 @@ public interface FriendGroupService {
      * @return
      */
     RespVO<List<FriendGroupVO>> deleteFriendGroup(Long friendGroupId, Long userId);
+
+    /**
+     * 预览分组列表
+     * @param userId
+     * @return
+     */
+    RespVO<List<FriendGroupPreviewVO>> getFriendGroupPreviews(Long userId);
 }

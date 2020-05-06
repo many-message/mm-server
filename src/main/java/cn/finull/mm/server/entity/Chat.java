@@ -1,5 +1,6 @@
 package cn.finull.mm.server.entity;
 
+import cn.finull.mm.server.common.enums.ChatTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,31 +14,29 @@ import java.util.Date;
  * Copyright (C) HPE, All rights reserved.
  *
  * @author Ma, Chenxi
- * @date 2020-02-13 23:04
+ * @date 2020-05-06 20:57
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "friend")
-public class Friend {
+@Table(name = "chat")
+public class Chat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "friend_id")
-    private Long friendId;
-
-    @Column(name = "friend_name", nullable = false)
-    private String friendName;
+    @Column(name = "chat_id")
+    private Long chatId;
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "friend_user_id", nullable = false)
-    private Long friendUserId;
+    @Column(name = "chat_obj_id", nullable = false)
+    private Long chatObjId;
 
-    @Column(name = "friend_group_id", nullable = false)
-    private Long friendGroupId;
+    @Convert(converter = ChatTypeEnum.ChatTypeEnumConverter.class)
+    @Column(name = "chat_type", nullable = false)
+    private ChatTypeEnum chatType;
 
     @Column(name = "create_time", nullable = false)
     private Date createTime;
@@ -45,11 +44,10 @@ public class Friend {
     @Column(name = "update_time", nullable = false)
     private Date updateTime;
 
-    public Friend(Long userId, Long friendUserId, Long friendGroupId, String friendName) {
+    public Chat(Long userId, ChatTypeEnum chatType, Long chatObjId) {
         this.userId = userId;
-        this.friendUserId = friendUserId;
-        this.friendGroupId = friendGroupId;
-        this.friendName = friendName;
+        this.chatType = chatType;
+        this.chatObjId = chatObjId;
         createTime = new Date();
         updateTime = new Date();
     }

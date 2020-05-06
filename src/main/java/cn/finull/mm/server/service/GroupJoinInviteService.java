@@ -1,7 +1,6 @@
 package cn.finull.mm.server.service;
 
-import cn.finull.mm.server.common.enums.GroupJoinInviteStatusEnum;
-import cn.finull.mm.server.param.privates.GroupJoinInviteAddPrivateParam;
+import cn.finull.mm.server.param.GroupJoinInviteAddParam;
 import cn.finull.mm.server.vo.GroupJoinInviteVO;
 import cn.finull.mm.server.common.vo.RespVO;
 
@@ -18,19 +17,20 @@ import java.util.List;
 public interface GroupJoinInviteService {
 
     /**
-     * 邀请一个好友加入群
-     * @param groupJoinInviteAddPrivateParam
+     * 邀请好友加入群聊
+     * @param groupJoinInviteAddParam
+     * @param userId
      * @return
      */
-    RespVO<GroupJoinInviteVO> inviteJoinGroup(GroupJoinInviteAddPrivateParam groupJoinInviteAddPrivateParam);
+    RespVO sendGroupJoinInvite(GroupJoinInviteAddParam groupJoinInviteAddParam, Long userId);
 
     /**
-     * 修改邀请状态
+     * 同意加入群聊
      * @param groupJoinInviteId
-     * @param groupJoinInviteStatus
+     * @param userId
      * @return
      */
-    RespVO<GroupJoinInviteVO> updateGroupInviteStatus(Long groupJoinInviteId, GroupJoinInviteStatusEnum groupJoinInviteStatus);
+    RespVO<List<GroupJoinInviteVO>> agreeGroupJoinInvite(Long groupJoinInviteId, Long userId);
 
     /**
      * 获取所有入群邀请
@@ -45,5 +45,5 @@ public interface GroupJoinInviteService {
      * @param userId
      * @return
      */
-    RespVO deleteGroupJoinInvite(Long groupJoinInviteId, Long userId);
+    RespVO<List<GroupJoinInviteVO>> deleteGroupJoinInvite(Long groupJoinInviteId, Long userId);
 }

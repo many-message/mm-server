@@ -23,4 +23,6 @@ public interface FriendGroupRepository extends JpaRepository<FriendGroup, Long> 
     boolean existsByUserIdAndFriendGroupName(Long userId, String friendGroupName);
 
     int countByUserId(Long userId);
+
+    Optional<FriendGroup> findByUserIdAndFriendGroupName(Long userId, String friendGroupName);
 }
