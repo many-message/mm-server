@@ -16,12 +16,13 @@ import cn.finull.mm.server.common.util.RespUtil;
 import cn.finull.mm.server.vo.GroupJoinInviteVO;
 import cn.finull.mm.server.common.vo.RespVO;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -41,26 +42,28 @@ public class GroupJoinInviteServiceImpl implements GroupJoinInviteService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public RespVO sendGroupJoinInvite(GroupJoinInviteAddParam groupJoinInviteAddParam, Long userId) {
-        if (groupJoinInviteRepository.existsByGroupIdAndInviteUserId(
-                groupJoinInviteAddParam.getGroupId(), groupJoinInviteAddParam.getInviteUserId())) {
-            return RespUtil.error(RespCode.FORBIDDEN, "邀请已发出，请耐心等待！");
-        }
 
-        if (groupMemberRepository.existsByGroupIdAndUserId(
-                groupJoinInviteAddParam.getGroupId(), groupJoinInviteAddParam.getInviteUserId())) {
-            return RespUtil.error(RespCode.FORBIDDEN, "已在群聊中！");
+        if (CollUtil.isNotEmpty(groupJoinInviteAddParam.getInviteUserIds())) {
+            groupJoinInviteAddParam.getInviteUserIds()
+                    .forEach(inviteUserId ->
+                            saveGroupJoinInvite(groupJoinInviteAddParam.getGroupId(), userId, inviteUserId));
         }
-
-        GroupJoinInvite groupJoinInvite = new GroupJoinInvite(
-                groupJoinInviteAddParam.getGroupId(),
-                userId,
-                groupJoinInviteAddParam.getInviteUserId(),
-                groupJoinInviteAddParam.getInviteMsg());
-        groupJoinInviteRepository.save(groupJoinInvite);
 
         return RespUtil.OK();
+    }
+
+    private void saveGroupJoinInvite(Long groupId, Long reqUserId, Long inviteUserId) {
+        if (groupJoinInviteRepository.existsByGroupIdAndInviteUserId(groupId, inviteUserId)) {
+            return;
+        }
+        if (groupMemberRepository.existsByGroupIdAndUserId(groupId, inviteUserId)) {
+            return;
+        }
+        GroupJoinInvite groupJoinInvite = new GroupJoinInvite(groupId, reqUserId, inviteUserId);
+        groupJoinInviteRepository.save(groupJoinInvite);
     }
 
     @Override

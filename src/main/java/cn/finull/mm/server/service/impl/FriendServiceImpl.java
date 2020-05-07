@@ -5,6 +5,7 @@ import cn.finull.mm.server.common.enums.ChatTypeEnum;
 import cn.finull.mm.server.dao.*;
 import cn.finull.mm.server.entity.Friend;
 import cn.finull.mm.server.entity.FriendGroup;
+import cn.finull.mm.server.entity.GroupMember;
 import cn.finull.mm.server.entity.User;
 import cn.finull.mm.server.service.FriendGroupService;
 import cn.finull.mm.server.service.FriendService;
@@ -40,6 +41,7 @@ public class FriendServiceImpl implements FriendService {
     private final UserRepository userRepository;
     private final ChatRepository chatRepository;
     private final MsgRepository msgRepository;
+    private final GroupMemberRepository groupMemberRepository;
 
     @Autowired
     private FriendGroupService friendGroupService;
@@ -132,5 +134,18 @@ public class FriendServiceImpl implements FriendService {
         msgRepository.deleteBySendUserIdAndRecvUserId(friend.getFriendUserId(), userId);
 
         return friendGroupService.getFriendGroups(userId);
+    }
+
+    @Override
+    public RespVO<List<FriendVO>> getMyFriends(Long groupId, Long userId) {
+        List<Long> friendUserIds = groupMemberRepository.findAllByGroupIdOrderByGroupMemberType(groupId)
+                .stream()
+                .map(GroupMember::getUserId)
+                .collect(Collectors.toList());
+        List<FriendVO> friends = friendRepository.findByUserIdAndFriendUserIdNotIn(userId, friendUserIds).
+                stream()
+                .map(this::buildFriendVO)
+                .collect(Collectors.toList());
+        return RespUtil.OK(friends);
     }
 }

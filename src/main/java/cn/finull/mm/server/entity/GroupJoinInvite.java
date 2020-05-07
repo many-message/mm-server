@@ -36,20 +36,16 @@ public class GroupJoinInvite {
     @Column(name = "invite_user_id", nullable = false)
     private Long inviteUserId;
 
-    @Column(name = "invite_msg", nullable = false)
-    private String inviteMsg;
-
     @Column(name = "create_time", nullable = false)
     private Date createTime;
 
     @Column(name = "update_time", nullable = false)
     private Date updateTime;
 
-    public GroupJoinInvite(Long groupId, Long reqUserId, Long inviteUserId, String inviteMsg) {
+    public GroupJoinInvite(Long groupId, Long reqUserId, Long inviteUserId) {
         this.groupId = groupId;
         this.reqUserId = reqUserId;
         this.inviteUserId = inviteUserId;
-        this.inviteMsg = inviteMsg;
         createTime = new Date();
         updateTime = new Date();
     }

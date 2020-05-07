@@ -18,8 +18,6 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
 
     List<Friend> findByFriendGroupIdOrderByCreateTimeDesc(Long friendGroupId);
 
-    List<Friend> findAllByUserIdOrderByFriendName(Long userId);
-
     Optional<Friend> findByFriendIdAndUserId(Long friendId, Long userId);
 
     long countByFriendGroupId(Long friendGroupId);
@@ -29,4 +27,6 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
     boolean existsByUserIdAndFriendUserId(Long userId, Long friendUserId);
 
     Optional<Friend> findByUserIdAndFriendUserId(Long userId, Long friendUserId);
+
+    List<Friend> findByUserIdAndFriendUserIdNotIn(Long userId, List<Long> friendUserIds);
 }

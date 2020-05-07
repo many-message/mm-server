@@ -75,4 +75,16 @@ public class FriendController {
                                                     @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return friendService.deleteFriend(friendId, userId);
     }
+
+    /**
+     * 查询我的所有未在指定群聊中的好友
+     * @param groupId
+     * @param userId
+     * @return
+     */
+    @GetMapping("/friends/{groupId}/not")
+    public RespVO<List<FriendVO>> getMyFriends(@PathVariable("groupId") Long groupId,
+                                               @RequestAttribute(RequestConstant.USER_ID) Long userId) {
+        return friendService.getMyFriends(groupId, userId);
+    }
 }

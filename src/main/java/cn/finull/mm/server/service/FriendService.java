@@ -55,4 +55,12 @@ public interface FriendService {
      * @return 被删除用户的id
      */
     RespVO<List<FriendGroupVO>> deleteFriend(Long friendId, Long userId);
+
+    /**
+     * 查询我的所有未在指定群聊中的好友
+     * @param groupId
+     * @param userId
+     * @return
+     */
+    RespVO<List<FriendVO>> getMyFriends(Long groupId, Long userId);
 }

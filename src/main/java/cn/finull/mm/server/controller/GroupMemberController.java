@@ -79,4 +79,14 @@ public class GroupMemberController {
                                           @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return groupMemberService.leaveGroup(groupId, userId);
     }
+
+    /**
+     * 查询一个群的所有成员ID
+     * @param groupId
+     * @return
+     */
+    @GetMapping("/groups/{groupId}/members/user-ids")
+    public RespVO<List<Long>> getGroupMemberUserIds(@PathVariable("groupId") Long groupId) {
+        return groupMemberService.getUserIdsByGroupId(groupId);
+    }
 }

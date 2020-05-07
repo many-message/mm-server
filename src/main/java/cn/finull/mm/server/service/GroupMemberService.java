@@ -59,10 +59,8 @@ public interface GroupMemberService {
      */
     RespVO<GroupListVO> leaveGroup(Long groupId, Long userId);
 
-    // private
-
     /**
-     * 获取一个群的所有用户
+     * 获取一个群的所有用户Id
      * @param groupId
      * @return
      */
