@@ -122,6 +122,15 @@ public class FriendReqServiceImpl implements FriendReqService {
         return RespUtil.OK(friendReqs);
     }
 
+    @Override
+    public RespVO<FriendReqVO> getFriendReq(Long friendReqId) {
+        Optional<FriendReq> optional = friendReqRepository.findById(friendReqId);
+        if (optional.isEmpty()) {
+            return RespUtil.error(RespCode.NOT_FOUND, "请求不存在！");
+        }
+        return RespUtil.OK(buildFriendReqVO(optional.get()));
+    }
+
     private FriendReqVO buildFriendReqVO(FriendReq friendReq) {
         // 好友请求信息
         FriendReqVO friendReqVO = new FriendReqVO();

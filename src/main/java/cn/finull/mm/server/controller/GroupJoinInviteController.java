@@ -62,6 +62,16 @@ public class GroupJoinInviteController {
     }
 
     /**
+     * 查询群聊邀请详情
+     * @param groupJoinInviteId
+     * @return
+     */
+    @GetMapping("/group-join-invites/{groupJoinInviteId}")
+    public RespVO<GroupJoinInviteVO> getGroupJoinInvite(@PathVariable("groupJoinInviteId") Long groupJoinInviteId) {
+        return groupJoinInviteService.getGroupJoinInvite(groupJoinInviteId);
+    }
+
+    /**
      * 删除入群邀请
      * @param groupJoinInviteId
      * @param userId

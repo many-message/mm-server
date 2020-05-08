@@ -63,6 +63,16 @@ public class FriendReqController {
     }
 
     /**
+     * 查询好友请求详情
+     * @param friendReqId
+     * @return
+     */
+    @GetMapping("/friend-reqs/{friendReqId}")
+    public RespVO<FriendReqVO> getFriendReq(@PathVariable("friendReqId") Long friendReqId) {
+        return friendReqService.getFriendReq(friendReqId);
+    }
+
+    /**
      * 删除一个好友请求
      * @param friendReqId
      * @param userId

@@ -100,7 +100,7 @@ public class GroupJoinReqServiceImpl implements GroupJoinReqService {
             groupMemberRepository.save(groupMember);
         }
 
-        groupJoinReqRepository.deleteByGroupId(groupJoinReqId);
+        groupJoinReqRepository.deleteById(groupJoinReqId);
 
         return getGroupJoinReqs(userId);
     }
@@ -134,13 +134,22 @@ public class GroupJoinReqServiceImpl implements GroupJoinReqService {
 
         List<GroupJoinReqVO> groupJoinReqs = groupJoinReqRepository.findByGroupIdInOrderByCreateTimeDesc(groupIds)
                 .stream()
-                .map(this::buildGroupJoinReqPrivateVO)
+                .map(this::buildGroupJoinReqVO)
                 .collect(Collectors.toList());
 
         return RespUtil.OK(groupJoinReqs);
     }
 
-    private GroupJoinReqVO buildGroupJoinReqPrivateVO(GroupJoinReq groupJoinReq) {
+    @Override
+    public RespVO<GroupJoinReqVO> getGroupJoinReq(Long groupJoinReqId) {
+        Optional<GroupJoinReq> optional = groupJoinReqRepository.findById(groupJoinReqId);
+        if (optional.isEmpty()) {
+            return RespUtil.error(RespCode.NOT_FOUND, "入群请求不存在！");
+        }
+        return RespUtil.OK(buildGroupJoinReqVO(optional.get()));
+    }
+
+    private GroupJoinReqVO buildGroupJoinReqVO(GroupJoinReq groupJoinReq) {
         GroupJoinReqVO groupJoinReqVO = new GroupJoinReqVO();
 
         User user = userRepository.getOne(groupJoinReq.getReqUserId());

@@ -30,8 +30,6 @@ public class GroupJoinInviteVO {
     private String nickname;
     private String email;
 
-    private String inviteMsg;
-
     private Date createTime;
     private Date updateTime;
 }

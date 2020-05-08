@@ -46,4 +46,11 @@ public interface GroupJoinReqService {
      * @return
      */
     RespVO<List<GroupJoinReqVO>> getGroupJoinReqs(Long userId);
+
+    /**
+     * 查询入群请求详情
+     * @param groupJoinReqId
+     * @return
+     */
+    RespVO<GroupJoinReqVO> getGroupJoinReq(Long groupJoinReqId);
 }

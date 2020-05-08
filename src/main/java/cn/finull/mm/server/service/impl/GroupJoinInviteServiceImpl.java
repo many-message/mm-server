@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -98,6 +99,15 @@ public class GroupJoinInviteServiceImpl implements GroupJoinInviteService {
                 .map(this::buildGroupJoinInviteVO)
                 .collect(Collectors.toList());
         return RespUtil.OK(groupJoinInvites);
+    }
+
+    @Override
+    public RespVO<GroupJoinInviteVO> getGroupJoinInvite(Long groupJoinInviteId) {
+        Optional<GroupJoinInvite> optional = groupJoinInviteRepository.findById(groupJoinInviteId);
+        if (optional.isEmpty()) {
+            return RespUtil.error(RespCode.NOT_FOUND, "群聊邀请不存在！");
+        }
+        return RespUtil.OK(buildGroupJoinInviteVO(optional.get()));
     }
 
     private GroupJoinInviteVO buildGroupJoinInviteVO(GroupJoinInvite groupJoinInvite) {

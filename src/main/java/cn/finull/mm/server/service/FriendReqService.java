@@ -41,6 +41,13 @@ public interface FriendReqService {
     RespVO<List<FriendReqVO>> getFriendReqs(Long userId);
 
     /**
+     * 查询好友请求详情
+     * @param friendReqId
+     * @return
+     */
+    RespVO<FriendReqVO> getFriendReq(Long friendReqId);
+
+    /**
      * 删除一个好友请求
      * @param friendReqId
      * @param userId

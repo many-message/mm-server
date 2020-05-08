@@ -72,4 +72,14 @@ public class GroupJoinReqController {
     public RespVO<List<GroupJoinReqVO>> getGroupJoinReqs(@RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return groupJoinReqService.getGroupJoinReqs(userId);
     }
+
+    /**
+     * 入群请求详情
+     * @param groupJoinReqId
+     * @return
+     */
+    @GetMapping("/group-join-reqs/{groupJoinReqId}")
+    public RespVO<GroupJoinReqVO> getGroupJoinReq(@PathVariable("groupJoinReqId") Long groupJoinReqId) {
+        return groupJoinReqService.getGroupJoinReq(groupJoinReqId);
+    }
 }

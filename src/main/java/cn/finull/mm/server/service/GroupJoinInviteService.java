@@ -40,6 +40,13 @@ public interface GroupJoinInviteService {
     RespVO<List<GroupJoinInviteVO>> getGroupJoinInvites(Long userId);
 
     /**
+     * 查询入群邀请详情
+     * @param groupJoinInviteId
+     * @return
+     */
+    RespVO<GroupJoinInviteVO> getGroupJoinInvite(Long groupJoinInviteId);
+
+    /**
      * 删除入群邀请
      * @param groupJoinInviteId
      * @param userId
