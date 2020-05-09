@@ -2,7 +2,7 @@ package cn.finull.mm.server.service;
 
 /**
  * Description
- * <p> 每日任务调度
+ * <p> 任务调度
  * Copyright (C) HPE, All rights reserved.
  *
  * @author Ma, Chenxi
@@ -14,4 +14,9 @@ public interface TaskSchedulingService {
      * 每日清理密码错误次数
      */
     void cleanUpPwdErrCount();
+
+    /**
+     * 每日清理已签收的消息
+     */
+    void cleanUpSignMsg();
 }

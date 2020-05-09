@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,10 @@ public class FriendReqServiceImpl implements FriendReqService {
 
     @Override
     public RespVO sendFriendReq(FriendReqAddParam friendReqAddParam, Long userId) {
+        if (Objects.equals(userId, friendReqAddParam.getRecvUserId())) {
+            return RespUtil.error(RespCode.FORBIDDEN, "操作非法！");
+        }
+
         if (friendReqRepository.existsByReqUserIdAndRecvUserId(userId, friendReqAddParam.getRecvUserId())) {
             return RespUtil.error(RespCode.BAD_REQUEST, "请求已发送，请耐心等待！");
         }

@@ -34,6 +34,7 @@ public class MsgServiceImpl implements MsgService {
     public RespVO addMsg(MsgAddPrivateParam msgAddPrivateParam) {
         Msg msg = new Msg();
         BeanUtil.copyProperties(msgAddPrivateParam, msg);
+        msg.setSign(Boolean.FALSE);
         msg.setCreateTime(new Date());
         msg.setUpdateTime(new Date());
         msgRepository.save(msg);
@@ -41,12 +42,11 @@ public class MsgServiceImpl implements MsgService {
     }
 
     @Override
-    public RespVO<List<MsgVO>> getMessages(Long sendUserId, Long recvUserId) {
-        List<MsgVO> messages = msgRepository.findAllBySendUserIdAndRecvUserIdOrderByCreateTime(sendUserId, recvUserId)
+    public List<MsgVO> getMessages(Long sendUserId, Long recvUserId) {
+        return msgRepository.findAllMsg(sendUserId, recvUserId)
                 .stream()
                 .map(this::buildMsgVO)
                 .collect(Collectors.toList());
-        return RespUtil.OK(messages);
     }
 
     private MsgVO buildMsgVO(Msg msg) {
@@ -57,7 +57,7 @@ public class MsgServiceImpl implements MsgService {
 
     @Override
     public RespVO recvMessage(Long sendUserId, Long recvUserId) {
-        msgRepository.deleteBySendUserIdAndRecvUserId(sendUserId, recvUserId);
+        msgRepository.signMsgBySendUserIdAndRecvUserId(sendUserId, recvUserId);
         return RespUtil.OK();
     }
 }

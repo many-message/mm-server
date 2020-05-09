@@ -2,13 +2,10 @@ package cn.finull.mm.server.controller;
 
 import cn.finull.mm.server.common.constant.RequestConstant;
 import cn.finull.mm.server.service.MsgService;
-import cn.finull.mm.server.vo.MsgVO;
 import cn.finull.mm.server.common.vo.RespVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * Description
@@ -24,18 +21,6 @@ import java.util.List;
 public class MsgController {
 
     private final MsgService msgService;
-
-    /**
-     * 获取所有未签收的消息
-     * @param sendUserId
-     * @param recvUserId
-     * @return
-     */
-    @GetMapping("/messages/{sendUserId}")
-    public RespVO<List<MsgVO>> getMessages(@PathVariable("sendUserId") Long sendUserId,
-                                           @RequestAttribute(RequestConstant.USER_ID) Long recvUserId) {
-        return msgService.getMessages(sendUserId, recvUserId);
-    }
 
     /**
      * 签收消息

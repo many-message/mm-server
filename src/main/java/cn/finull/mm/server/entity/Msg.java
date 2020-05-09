@@ -39,6 +39,9 @@ public class Msg {
     @Column(name = "msg_addition", nullable = false)
     private String msgAddition;
 
+    @Column(name = "sign", columnDefinition = "TINYINT", nullable = false, length = 1)
+    private Boolean sign;
+
     @Column(name = "create_time", nullable = false)
     private Date createTime;
 

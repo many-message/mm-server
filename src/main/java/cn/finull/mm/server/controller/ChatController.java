@@ -44,7 +44,7 @@ public class ChatController {
      * @return
      */
     @PostMapping("/chats")
-    public RespVO<List<ChatVO>> addChat(@Validated @RequestBody ChatAddParam chatAddParam,
+    public RespVO<ChatVO> addChat(@Validated @RequestBody ChatAddParam chatAddParam,
                                         @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return chatService.addChat(chatAddParam, userId);
     }
@@ -56,7 +56,7 @@ public class ChatController {
      * @return
      */
     @DeleteMapping("/chats/{chatId}")
-    public RespVO<List<ChatVO>> deleteChat(@PathVariable("chatId") Long chatId,
+    public RespVO deleteChat(@PathVariable("chatId") Long chatId,
                                            @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return chatService.deleteChat(chatId, userId);
     }

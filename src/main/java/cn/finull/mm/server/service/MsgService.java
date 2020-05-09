@@ -29,7 +29,7 @@ public interface MsgService {
      * @param recvUserId
      * @return
      */
-    RespVO<List<MsgVO>> getMessages(Long sendUserId, Long recvUserId);
+    List<MsgVO> getMessages(Long sendUserId, Long recvUserId);
 
     /**
      * 签收消息

@@ -2,6 +2,9 @@ package cn.finull.mm.server.dao;
 
 import cn.finull.mm.server.entity.Msg;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -16,8 +19,19 @@ import java.util.List;
  */
 public interface MsgRepository extends JpaRepository<Msg, Long> {
 
-    List<Msg> findAllBySendUserIdAndRecvUserIdOrderByCreateTime(Long sendUserId, Long recvUserId);
+    @Modifying
+    @Query("UPDATE #{#entityName} SET sign = 1 WHERE sendUserId = :sendUserId AND recvUserId = :recvUserId AND sign = 0")
+    @Transactional
+    void signMsgBySendUserIdAndRecvUserId(@Param("sendUserId") Long sendUserId, @Param("recvUserId") Long recvUserId);
+
+    @Query("SELECT m FROM #{#entityName} m WHERE sign = 0 AND " +
+            "((sendUserId = :sendUserId AND recvUserId = :recvUserId) OR " +
+            "(sendUserId = :recvUserId AND recvUserId = :sendUserId)) ORDER BY createTime ASC")
+    List<Msg> findAllMsg(@Param("sendUserId") Long sendUserId, @Param("recvUserId") Long recvUserId);
 
     @Transactional
     void deleteBySendUserIdAndRecvUserId(Long sendUserId, Long recvUserId);
+
+    @Transactional
+    void deleteBySign(Boolean sign);
 }

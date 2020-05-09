@@ -1,8 +1,11 @@
 package cn.finull.mm.server.vo;
 
+import cn.finull.mm.server.common.enums.ChatTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 /**
  * Description
@@ -19,12 +22,26 @@ public class ChatVO {
 
     private Long chatId;
 
+    private Long chatObjId;
+
     /**
-     * 图片名字
+     * 1-私聊；2-群聊
      */
-    private String chatObjName;
+    private ChatTypeEnum chatType;
 
-    private String chatObjTitle;
+    private String chatName;
 
-    private String chatObjDesc;
+    private String chatTitle;
+
+    private String chatDesc;
+
+    /**
+     * 是否有未签收的消息
+     */
+    private Boolean hasMsg;
+
+    /**
+     * 消息列表
+     */
+    private List<MsgVO> messages;
 }

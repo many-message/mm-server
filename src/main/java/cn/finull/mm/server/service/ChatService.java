@@ -29,7 +29,7 @@ public interface ChatService {
      * @param userId
      * @return
      */
-    RespVO<List<ChatVO>> addChat(ChatAddParam chatAddParam, Long userId);
+    RespVO<ChatVO> addChat(ChatAddParam chatAddParam, Long userId);
 
     /**
      * 删除一条聊天
@@ -37,5 +37,5 @@ public interface ChatService {
      * @param userId
      * @return
      */
-    RespVO<List<ChatVO>> deleteChat(Long chatId, Long userId);
+    RespVO deleteChat(Long chatId, Long userId);
 }

@@ -56,9 +56,10 @@ public interface UserService {
     /**
      * 搜索用户
      * @param keyword
+     * @param userId
      * @return
      */
-    RespVO<List<UserVO>> searchUser(String keyword);
+    RespVO<List<UserVO>> searchUser(String keyword, Long userId);
 
     /**
      * 查询用户详情

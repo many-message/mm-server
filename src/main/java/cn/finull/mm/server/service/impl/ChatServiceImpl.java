@@ -4,17 +4,15 @@ import cn.finull.mm.server.common.constant.RespCode;
 import cn.finull.mm.server.common.enums.ChatTypeEnum;
 import cn.finull.mm.server.common.util.RespUtil;
 import cn.finull.mm.server.common.vo.RespVO;
-import cn.finull.mm.server.dao.ChatRepository;
-import cn.finull.mm.server.dao.FriendRepository;
-import cn.finull.mm.server.dao.GroupRepository;
-import cn.finull.mm.server.dao.UserRepository;
-import cn.finull.mm.server.entity.Chat;
-import cn.finull.mm.server.entity.Friend;
-import cn.finull.mm.server.entity.Group;
-import cn.finull.mm.server.entity.User;
+import cn.finull.mm.server.dao.*;
+import cn.finull.mm.server.entity.*;
 import cn.finull.mm.server.param.ChatAddParam;
 import cn.finull.mm.server.service.ChatService;
+import cn.finull.mm.server.service.MsgService;
 import cn.finull.mm.server.vo.ChatVO;
+import cn.finull.mm.server.vo.MsgVO;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +39,8 @@ public class ChatServiceImpl implements ChatService {
     private final GroupRepository groupRepository;
     private final FriendRepository friendRepository;
 
+    private final MsgService msgService;
+
     @Override
     public RespVO<List<ChatVO>> getChats(Long userId) {
         List<ChatVO> chats = chatRepository.findByUserIdOrderByCreateTimeDesc(userId)
@@ -53,33 +53,64 @@ public class ChatServiceImpl implements ChatService {
 
     private ChatVO buildChatVO(Chat chat) {
         ChatVO chatVO = new ChatVO();
-        chatVO.setChatId(chat.getChatId());
+
+        // chatId, chatObjId, chatType
+        BeanUtil.copyProperties(chat, chatVO);
+
+        chatVO.setHasMsg(Boolean.FALSE);
 
         if (ChatTypeEnum.USER == chat.getChatType()) {
+
             Optional<Friend> optional = friendRepository.findByUserIdAndFriendUserId(
                     chat.getUserId(), chat.getChatObjId());
-
             if (optional.isEmpty()) {
                 return null;
             }
 
-            chatVO.setChatObjName(optional.get().getFriendName());
+            chatVO.setChatTitle(optional.get().getFriendName());
 
+            // 好友信息
             User user = userRepository.getOne(chat.getChatObjId());
-            chatVO.setChatObjTitle(user.getNickname());
-            chatVO.setChatObjDesc(user.getEmail());
+            chatVO.setChatName(user.getNickname());
+            chatVO.setChatDesc(user.getEmail());
+
+            // 自己的信息
+            User me = userRepository.getOne(chat.getUserId());
+
+            // 前10条消息
+            List<MsgVO> messages = msgService.getMessages(chat.getChatObjId(), chat.getUserId());
+            messages.forEach(message -> {
+                if (Objects.equals(chat.getUserId(), message.getSendUserId())) {
+                    // 自己
+                    message.setFriendName(me.getNickname());
+                    message.setNickname(me.getNickname());
+                } else {
+                    // 好友
+                    message.setFriendName(chatVO.getChatTitle());
+                    message.setNickname(chatVO.getChatName());
+                }
+            });
+            chatVO.setMessages(messages);
+
+            chatVO.setHasMsg(CollUtil.isNotEmpty(messages));
         } else {
-            Group group = groupRepository.getOne(chat.getChatObjId());
-            chatVO.setChatObjTitle(group.getGroupName());
-            chatVO.setChatObjTitle(group.getGroupName());
-            chatVO.setChatObjDesc(group.getGroupDesc());
+
+            Optional<Group> optional = groupRepository.findById(chat.getChatObjId());
+            if (optional.isEmpty()) {
+                return null;
+            }
+            Group group = optional.get();
+
+            chatVO.setChatName(group.getGroupName());
+            chatVO.setChatTitle(group.getGroupName());
+            chatVO.setChatDesc(group.getGroupDesc());
         }
 
         return chatVO;
     }
 
     @Override
-    public RespVO<List<ChatVO>> addChat(ChatAddParam chatAddParam, Long userId) {
+    public RespVO<ChatVO> addChat(ChatAddParam chatAddParam, Long userId) {
 
         if (ChatTypeEnum.USER == chatAddParam.getChatType()
                 && !userRepository.existsById(chatAddParam.getChatObjId())) {
@@ -91,11 +122,16 @@ public class ChatServiceImpl implements ChatService {
         Chat chat = new Chat(userId, chatAddParam.getChatType(), chatAddParam.getChatObjId());
         chatRepository.save(chat);
 
-        return getChats(userId);
+        return getChat(chat.getChatId());
+    }
+
+    private RespVO<ChatVO> getChat(Long chatId) {
+        Chat chat = chatRepository.getOne(chatId);
+        return RespUtil.OK(buildChatVO(chat));
     }
 
     @Override
-    public RespVO<List<ChatVO>> deleteChat(Long chatId, Long userId) {
+    public RespVO deleteChat(Long chatId, Long userId) {
 
         if (!chatRepository.existsByChatIdAndUserId(chatId, userId)) {
             return RespUtil.error(RespCode.NOT_FOUND);
@@ -103,6 +139,6 @@ public class ChatServiceImpl implements ChatService {
 
         chatRepository.deleteById(chatId);
 
-        return getChats(userId);
+        return RespUtil.OK();
     }
 }

@@ -24,6 +24,7 @@ import cn.finull.mm.server.common.vo.PageVO;
 import cn.finull.mm.server.common.vo.RespVO;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -199,12 +200,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public RespVO<List<UserVO>> searchUser(String keyword) {
+    public RespVO<List<UserVO>> searchUser(String keyword, Long userId) {
         keyword = "%" + keyword + "%";
 
         List<UserVO> users = userRepository.findByEmailLikeOrNicknameLike(keyword, keyword)
                 .stream()
                 .map(this::buildUserVO)
+                .filter(userVO -> ObjectUtil.notEqual(userVO.getUserId(), userId))
                 .collect(Collectors.toList());
 
         return RespUtil.OK(users);
