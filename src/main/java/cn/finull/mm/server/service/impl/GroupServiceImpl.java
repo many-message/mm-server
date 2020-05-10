@@ -61,6 +61,7 @@ public class GroupServiceImpl implements GroupService {
     private final GroupJoinReqRepository groupJoinReqRepository;
     private final GroupJoinInviteRepository groupJoinInviteRepository;
     private final ChatRepository chatRepository;
+    private final GroupMsgRepository groupMsgRepository;
 
     @Autowired
     private GroupMemberService groupMemberService;
@@ -227,6 +228,9 @@ public class GroupServiceImpl implements GroupService {
 
         // 删除群聊天列表
         chatRepository.deleteByChatObjIdAndChatType(groupId, ChatTypeEnum.GROUP);
+
+        // 删除群消息
+        groupMsgRepository.deleteByGroupId(groupId);
 
         List<GroupVO> myGroups = getGroups(GroupQueryTypeEnum.MY_GROUP, userId).getData();
         List<GroupVO> joinGroups = getGroups(GroupQueryTypeEnum.MY_JOIN_GROUP, userId).getData();

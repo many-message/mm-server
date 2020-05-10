@@ -14,16 +14,18 @@ import javax.validation.constraints.NotNull;
  * Copyright (C) HPE, All rights reserved.
  *
  * @author Ma, Chenxi
- * @date 2020-02-16 16:15
+ * @date 2020-05-10 18:21
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MsgAddPrivateParam {
+public class GroupMsgAddPrivateParam {
+    @NotNull
+    private Long groupId;
+    @NotNull
+    private Long sendGroupMemberId;
     @NotNull
     private Long sendUserId;
-    @NotNull
-    private Long recvUserId;
     @NotBlank
     @Length(max = 255)
     private String msgContent;

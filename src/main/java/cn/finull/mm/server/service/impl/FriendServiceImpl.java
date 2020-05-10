@@ -129,7 +129,7 @@ public class FriendServiceImpl implements FriendService {
         chatRepository.deleteByUserIdAndChatObjIdAndChatType(userId, friend.getFriendUserId(), ChatTypeEnum.USER);
         chatRepository.deleteByUserIdAndChatObjIdAndChatType(friend.getFriendUserId(), userId, ChatTypeEnum.USER);
 
-        // 删除未签收消息
+        // 删除消息
         msgRepository.deleteBySendUserIdAndRecvUserId(userId, friend.getFriendUserId());
         msgRepository.deleteBySendUserIdAndRecvUserId(friend.getFriendUserId(), userId);
 

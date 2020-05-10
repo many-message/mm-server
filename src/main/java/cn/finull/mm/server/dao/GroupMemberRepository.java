@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Description
@@ -39,4 +40,6 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> 
     void deleteByGroupIdAndUserId(Long groupId, Long userId);
 
     int countByUserIdAndGroupMemberType(Long userId, GroupMemberTypeEnum groupMemberType);
+
+    Optional<GroupMember> findByGroupIdAndUserId(Long groupId, Long userId);
 }

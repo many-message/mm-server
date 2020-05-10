@@ -19,6 +19,7 @@ import cn.hutool.core.util.ObjectUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -103,6 +104,7 @@ public class GroupMemberServiceImpl implements GroupMemberService {
         return groupMemberVO;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public RespVO<List<GroupMemberVO>> deleteGroupMember(Long groupMemberId, Long userId) {
         Optional<GroupMember> groupMemberOptional = groupMemberRepository.findById(groupMemberId);
@@ -128,6 +130,7 @@ public class GroupMemberServiceImpl implements GroupMemberService {
         return getGroupMembers(groupMember.getGroupId());
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public RespVO<GroupListVO> leaveGroup(Long groupId, Long userId) {
         if (groupMemberRepository.existsByGroupIdAndUserIdAndGroupMemberType(
@@ -154,5 +157,14 @@ public class GroupMemberServiceImpl implements GroupMemberService {
                 .map(GroupMember::getUserId)
                 .collect(Collectors.toList());
         return RespUtil.OK(userIds);
+    }
+
+    @Override
+    public RespVO<GroupMemberVO> getGroupMemberUser(Long groupId, Long userId) {
+        Optional<GroupMember> optional = groupMemberRepository.findByGroupIdAndUserId(groupId, userId);
+        if (optional.isEmpty()) {
+            return RespUtil.error(RespCode.NOT_FOUND, "抱歉，您已不在群聊中！");
+        }
+        return RespUtil.OK(buildGroupMemberVO(optional.get()));
     }
 }

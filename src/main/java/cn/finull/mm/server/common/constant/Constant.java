@@ -24,4 +24,6 @@ public class Constant {
      * 默认好友分组
      */
     public static final String FRIEND_GROUP_NAME = "我的好友";
+
+    public static final Integer PAGE_SIZE = 5;
 }

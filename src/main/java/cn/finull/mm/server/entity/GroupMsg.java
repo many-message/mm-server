@@ -13,34 +13,34 @@ import java.util.Date;
  * Copyright (C) HPE, All rights reserved.
  *
  * @author Ma, Chenxi
- * @date 2020-02-16 16:05
+ * @date 2020-05-10 18:16
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "msg")
-public class Msg {
+@Table(name = "group_msg")
+public class GroupMsg {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "msg_id")
-    private Long msgId;
+    @Column(name = "group_msg_id")
+    private Long groupMsgId;
+
+    @Column(name = "group_id", nullable = false)
+    private Long groupId;
+
+    @Column(name = "send_group_member_id", nullable = false)
+    private Long sendGroupMemberId;
 
     @Column(name = "send_user_id", nullable = false)
     private Long sendUserId;
-
-    @Column(name = "recv_user_id", nullable = false)
-    private Long recvUserId;
 
     @Column(name = "msg_content")
     private String msgContent;
 
     @Column(name = "msg_addition")
     private String msgAddition;
-
-    @Column(name = "sign", columnDefinition = "TINYINT", nullable = false, length = 1)
-    private Boolean sign;
 
     @Column(name = "create_time", nullable = false)
     private Date createTime;

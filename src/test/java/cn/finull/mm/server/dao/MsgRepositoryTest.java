@@ -36,7 +36,7 @@ class MsgRepositoryTest {
     void findAllMsg() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        List<Msg> messages = msgRepository.findAllMsg(1L, 2L);
+        List<Msg> messages = msgRepository.findAllMsg(PageRequest.of(0, 10), 1L, 2L);
 
         log.info("===========================================================");
         messages.forEach(msg -> {

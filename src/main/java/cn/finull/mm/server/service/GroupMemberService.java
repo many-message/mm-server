@@ -65,4 +65,12 @@ public interface GroupMemberService {
      * @return
      */
     RespVO<List<Long>> getUserIdsByGroupId(Long groupId);
+
+    /**
+     *
+     * @param groupId
+     * @param userId
+     * @return
+     */
+    RespVO<GroupMemberVO> getGroupMemberUser(Long groupId, Long userId);
 }

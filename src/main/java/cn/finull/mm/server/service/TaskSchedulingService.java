@@ -19,4 +19,9 @@ public interface TaskSchedulingService {
      * 每日清理已签收的消息
      */
     void cleanUpSignMsg();
+
+    /**
+     * 清理群聊消息
+     */
+    void cleanUpGroupMsg();
 }

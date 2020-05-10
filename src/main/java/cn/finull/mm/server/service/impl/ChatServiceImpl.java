@@ -9,6 +9,7 @@ import cn.finull.mm.server.entity.*;
 import cn.finull.mm.server.param.ChatAddParam;
 import cn.finull.mm.server.service.ChatService;
 import cn.finull.mm.server.service.MsgService;
+import cn.finull.mm.server.vo.ChatInfoVO;
 import cn.finull.mm.server.vo.ChatVO;
 import cn.finull.mm.server.vo.MsgVO;
 import cn.hutool.core.bean.BeanUtil;
@@ -16,6 +17,7 @@ import cn.hutool.core.collection.CollUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -38,8 +40,8 @@ public class ChatServiceImpl implements ChatService {
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
     private final FriendRepository friendRepository;
-
-    private final MsgService msgService;
+    private final GroupMemberRepository groupMemberRepository;
+    private final MsgRepository msgRepository;
 
     @Override
     public RespVO<List<ChatVO>> getChats(Long userId) {
@@ -49,6 +51,15 @@ public class ChatServiceImpl implements ChatService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         return RespUtil.OK(chats);
+    }
+
+    @Override
+    public RespVO<ChatVO> getChat(Long chatId) {
+        Optional<Chat> optional = chatRepository.findById(chatId);
+        if (optional.isEmpty()) {
+            return RespUtil.error(RespCode.NOT_FOUND);
+        }
+        return RespUtil.OK(buildChatVO(optional.get()));
     }
 
     private ChatVO buildChatVO(Chat chat) {
@@ -74,25 +85,10 @@ public class ChatServiceImpl implements ChatService {
             chatVO.setChatName(user.getNickname());
             chatVO.setChatDesc(user.getEmail());
 
-            // 自己的信息
-            User me = userRepository.getOne(chat.getUserId());
-
-            // 前10条消息
-            List<MsgVO> messages = msgService.getMessages(chat.getChatObjId(), chat.getUserId());
-            messages.forEach(message -> {
-                if (Objects.equals(chat.getUserId(), message.getSendUserId())) {
-                    // 自己
-                    message.setFriendName(me.getNickname());
-                    message.setNickname(me.getNickname());
-                } else {
-                    // 好友
-                    message.setFriendName(chatVO.getChatTitle());
-                    message.setNickname(chatVO.getChatName());
-                }
-            });
-            chatVO.setMessages(messages);
-
-            chatVO.setHasMsg(CollUtil.isNotEmpty(messages));
+            // 是否有签收消息
+            boolean hasMsg = msgRepository.existsBySendUserIdAndRecvUserIdAndSign(
+                    chat.getChatObjId(), chat.getUserId(), Boolean.FALSE);
+            chatVO.setHasMsg(hasMsg);
         } else {
 
             Optional<Group> optional = groupRepository.findById(chat.getChatObjId());
@@ -110,28 +106,37 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public RespVO<ChatVO> addChat(ChatAddParam chatAddParam, Long userId) {
+    public RespVO<ChatInfoVO> addChat(ChatAddParam chatAddParam, Long userId) {
 
-        if (ChatTypeEnum.USER == chatAddParam.getChatType()
-                && !userRepository.existsById(chatAddParam.getChatObjId())) {
-            return RespUtil.error(RespCode.NOT_FOUND);
-        } else if (!groupRepository.existsById(chatAddParam.getChatObjId())) {
-            return RespUtil.error(RespCode.NOT_FOUND);
+        if (ChatTypeEnum.USER == chatAddParam.getChatType()) {
+            if (!friendRepository.existsByUserIdAndFriendUserId(userId, chatAddParam.getChatObjId())) {
+                return RespUtil.error(RespCode.FORBIDDEN, "您和他不是好友关系，无法发送消息！");
+            }
+        } else {
+            if (!groupMemberRepository.existsByGroupIdAndUserId(chatAddParam.getChatObjId(), userId)) {
+                return RespUtil.error(RespCode.FORBIDDEN, "您不是该群成员，无法发送消息！");
+            }
         }
 
-        Chat chat = new Chat(userId, chatAddParam.getChatType(), chatAddParam.getChatObjId());
-        chatRepository.save(chat);
+        Long chatId;
 
-        return getChat(chat.getChatId());
+        Optional<Chat> optional = chatRepository.findByUserIdAndAndChatObjIdAndAndChatType(
+                userId, chatAddParam.getChatObjId(), chatAddParam.getChatType());
+        if (optional.isEmpty()) {
+            Chat chat = new Chat(userId, chatAddParam.getChatType(), chatAddParam.getChatObjId());
+            chatId = chatRepository.save(chat).getChatId();
+
+        } else {
+            chatId = optional.get().getChatId();
+        }
+
+        ChatInfoVO vo = new ChatInfoVO(chatId, getChats(userId).getData());
+        return RespUtil.OK(vo);
     }
 
-    private RespVO<ChatVO> getChat(Long chatId) {
-        Chat chat = chatRepository.getOne(chatId);
-        return RespUtil.OK(buildChatVO(chat));
-    }
-
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public RespVO deleteChat(Long chatId, Long userId) {
+    public RespVO<List<ChatVO>> deleteChat(Long chatId, Long userId) {
 
         if (!chatRepository.existsByChatIdAndUserId(chatId, userId)) {
             return RespUtil.error(RespCode.NOT_FOUND);
@@ -139,6 +144,6 @@ public class ChatServiceImpl implements ChatService {
 
         chatRepository.deleteById(chatId);
 
-        return RespUtil.OK();
+        return getChats(userId);
     }
 }

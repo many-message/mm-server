@@ -18,6 +18,8 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MsgVO {
+
+    private Long msgId;
     /**
      * 发送用户ID
      */

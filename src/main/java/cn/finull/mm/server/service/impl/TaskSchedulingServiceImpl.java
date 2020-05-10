@@ -1,6 +1,7 @@
 package cn.finull.mm.server.service.impl;
 
 import cn.finull.mm.server.common.enums.UserStatusEnum;
+import cn.finull.mm.server.dao.GroupMsgRepository;
 import cn.finull.mm.server.dao.MsgRepository;
 import cn.finull.mm.server.dao.UserRepository;
 import cn.finull.mm.server.service.TaskSchedulingService;
@@ -26,6 +27,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     private final UserRepository userRepository;
     private final MsgRepository msgRepository;
+    private final GroupMsgRepository groupMsgRepository;
 
     @Scheduled(cron = "0 0 0 * * *")
     @Override
@@ -36,7 +38,13 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Scheduled(cron = "0 0 0 * * *")
     @Override
     public void cleanUpSignMsg() {
-        msgRepository.deleteBySign(Boolean.TRUE);
+        msgRepository.deleteBySignAndCreateTimeBefore(Boolean.TRUE, getBeforeDays(3));
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    @Override
+    public void cleanUpGroupMsg() {
+        groupMsgRepository.deleteByCreateTimeBefore(getBeforeDays(3));
     }
 
     /**

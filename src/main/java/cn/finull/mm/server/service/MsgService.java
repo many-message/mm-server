@@ -26,10 +26,11 @@ public interface MsgService {
     /**
      * 获取所有未签收的消息
      * @param sendUserId
+     * @param currentIndex
      * @param recvUserId
      * @return
      */
-    List<MsgVO> getMessages(Long sendUserId, Long recvUserId);
+    RespVO<List<MsgVO>> getMessages(Long sendUserId, Integer currentIndex, Long recvUserId);
 
     /**
      * 签收消息

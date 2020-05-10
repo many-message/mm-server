@@ -4,6 +4,7 @@ import cn.finull.mm.server.common.constant.RequestConstant;
 import cn.finull.mm.server.common.vo.RespVO;
 import cn.finull.mm.server.param.ChatAddParam;
 import cn.finull.mm.server.service.ChatService;
+import cn.finull.mm.server.vo.ChatInfoVO;
 import cn.finull.mm.server.vo.ChatVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,14 +39,24 @@ public class ChatController {
     }
 
     /**
+     * 查询单个聊天
+     * @param chatId
+     * @return
+     */
+    @GetMapping("/chats/{chatId}")
+    public RespVO<ChatVO> getChat(@PathVariable("chatId") Long chatId) {
+        return chatService.getChat(chatId);
+    }
+
+    /**
      * 添加一条聊天消息
      * @param chatAddParam
      * @param userId
      * @return
      */
     @PostMapping("/chats")
-    public RespVO<ChatVO> addChat(@Validated @RequestBody ChatAddParam chatAddParam,
-                                        @RequestAttribute(RequestConstant.USER_ID) Long userId) {
+    public RespVO<ChatInfoVO> addChat(@Validated @RequestBody ChatAddParam chatAddParam,
+                                      @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return chatService.addChat(chatAddParam, userId);
     }
 
@@ -56,7 +67,7 @@ public class ChatController {
      * @return
      */
     @DeleteMapping("/chats/{chatId}")
-    public RespVO deleteChat(@PathVariable("chatId") Long chatId,
+    public RespVO<List<ChatVO>> deleteChat(@PathVariable("chatId") Long chatId,
                                            @RequestAttribute(RequestConstant.USER_ID) Long userId) {
         return chatService.deleteChat(chatId, userId);
     }

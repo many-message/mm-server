@@ -1,6 +1,8 @@
 package cn.finull.mm.server.controller.privates;
 
+import cn.finull.mm.server.param.privates.GroupMsgAddPrivateParam;
 import cn.finull.mm.server.param.privates.MsgAddPrivateParam;
+import cn.finull.mm.server.service.GroupMsgService;
 import cn.finull.mm.server.service.MsgService;
 import cn.finull.mm.server.common.vo.RespVO;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MsgPrivateController {
 
     private final MsgService msgService;
+    private final GroupMsgService groupMsgService;
 
     /**
      * 添加一条消息
@@ -35,4 +38,15 @@ public class MsgPrivateController {
     public RespVO addMsg(@Validated @RequestBody MsgAddPrivateParam msgAddPrivateParam) {
         return msgService.addMsg(msgAddPrivateParam);
     }
+
+    /**
+     * 添加一条群聊消息
+     * @param param
+     * @return
+     */
+    @PostMapping("/groups/messages")
+    public RespVO addGroupMsg(@Validated @RequestBody GroupMsgAddPrivateParam param) {
+        return groupMsgService.addGroupMsg(param);
+    }
+
 }

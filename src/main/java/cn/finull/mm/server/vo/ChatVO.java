@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 /**
  * Description
  * <p>
@@ -39,9 +37,4 @@ public class ChatVO {
      * 是否有未签收的消息
      */
     private Boolean hasMsg;
-
-    /**
-     * 消息列表
-     */
-    private List<MsgVO> messages;
 }

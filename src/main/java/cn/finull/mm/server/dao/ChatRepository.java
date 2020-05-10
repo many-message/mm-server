@@ -3,8 +3,10 @@ package cn.finull.mm.server.dao;
 import cn.finull.mm.server.common.enums.ChatTypeEnum;
 import cn.finull.mm.server.entity.Chat;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Description
@@ -20,7 +22,11 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
 
     boolean existsByChatIdAndUserId(Long chatId, Long userId);
 
+    @Transactional
     void deleteByUserIdAndChatObjIdAndChatType(Long userId, Long chatObjId, ChatTypeEnum chatType);
 
+    @Transactional
     void deleteByChatObjIdAndChatType(Long chatObjId, ChatTypeEnum chatType);
+
+    Optional<Chat> findByUserIdAndAndChatObjIdAndAndChatType(Long userId, Long chatObjId, ChatTypeEnum chatType);
 }

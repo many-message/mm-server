@@ -89,4 +89,16 @@ public class GroupMemberController {
     public RespVO<List<Long>> getGroupMemberUserIds(@PathVariable("groupId") Long groupId) {
         return groupMemberService.getUserIdsByGroupId(groupId);
     }
+
+    /**
+     * 查询自己在群内的信息
+     * @param groupId
+     * @param userId
+     * @return
+     */
+    @GetMapping("/groups/{groupId}/members-info")
+    public RespVO<GroupMemberVO> getGroupMemberUser(@PathVariable("groupId") Long groupId,
+                                                    @RequestAttribute(RequestConstant.USER_ID) Long userId) {
+        return groupMemberService.getGroupMemberUser(groupId, userId);
+    }
 }
