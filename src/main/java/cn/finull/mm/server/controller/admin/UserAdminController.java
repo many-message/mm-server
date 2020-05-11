@@ -54,7 +54,7 @@ public class UserAdminController {
      * @return
      */
     @PatchMapping("/users/{userId}/passwords")
-    public RespVO resetUserPwd(@PathVariable("userId") Long userId) {
+    public RespVO<String> resetUserPwd(@PathVariable("userId") Long userId) {
         return userService.resetUserPwd(userId);
     }
 }

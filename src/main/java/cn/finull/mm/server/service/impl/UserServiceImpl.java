@@ -25,6 +25,7 @@ import cn.finull.mm.server.common.vo.RespVO;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -274,17 +275,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public RespVO resetUserPwd(Long userId) {
+    public RespVO<String> resetUserPwd(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
             return RespUtil.error(RespCode.NOT_FOUND, "用户不存在！");
         }
 
+        String defaultPwd = buildUserPwd();
+
         User user = userOptional.get();
-        user.setPwd(secureService.hashByBCrypt(mmConfig.getUserDefaultPwd()));
+        user.setPwd(secureService.hashByBCrypt(defaultPwd));
         user.setUpdateTime(new Date());
         userRepository.save(user);
 
-        return RespUtil.OK();
+        return RespUtil.OK(defaultPwd);
+    }
+
+    private String buildUserPwd() {
+        return RandomUtil.randomString(6);
     }
 }

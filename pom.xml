@@ -40,6 +40,13 @@
             <version>5.1.2</version>
         </dependency>
 
+        <!-- 图片缩略 -->
+        <dependency>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+            <version>0.4.11</version>
+        </dependency>
+
         <!-- cache -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

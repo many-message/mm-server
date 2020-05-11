@@ -93,5 +93,5 @@ public interface UserService {
      * @param userId
      * @return
      */
-    RespVO resetUserPwd(Long userId);
+    RespVO<String> resetUserPwd(Long userId);
 }

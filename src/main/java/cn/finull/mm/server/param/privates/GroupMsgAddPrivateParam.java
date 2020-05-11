@@ -26,7 +26,6 @@ public class GroupMsgAddPrivateParam {
     private Long sendGroupMemberId;
     @NotNull
     private Long sendUserId;
-    @NotBlank
     @Length(max = 255)
     private String msgContent;
     @Length(max = 255)

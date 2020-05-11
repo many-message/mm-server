@@ -24,4 +24,9 @@ public interface TaskSchedulingService {
      * 清理群聊消息
      */
     void cleanUpGroupMsg();
+
+    /**
+     * 清理文件资源
+     */
+    void cleanUpFiles();
 }

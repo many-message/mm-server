@@ -24,7 +24,6 @@ public class MsgAddPrivateParam {
     private Long sendUserId;
     @NotNull
     private Long recvUserId;
-    @NotBlank
     @Length(max = 255)
     private String msgContent;
     @Length(max = 255)

@@ -9,7 +9,7 @@
 
  Target Server Type    : MySQL
  Target Server Version : 80018
- File Encoding         : 65001
+ FileLog Encoding         : 65001
 
  Date: 16/02/2020 17:19:55
 */
